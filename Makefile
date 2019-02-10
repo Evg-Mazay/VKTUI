@@ -1,4 +1,5 @@
-COMPILER = g++ --std=c++11 -Wall
+# дефайн нужен для поддержки wchar
+COMPILER = g++ --std=c++11 -Wall -D_XOPEN_SOURCE_EXTENDED
 
 # При изменении любого .h всё нужно перекомпилить (т.к. инклюды)
 HEADERS = src/*.h src/classes/*.h
@@ -7,8 +8,8 @@ launch: vktui.exe
 	./vktui.exe
 
 vktui.exe: main.o event_handler.o renderer.o user_input.o \
-			state.o event_queue.o B.o events.o messages.o
-	$(COMPILER) -o vktui.exe -lncurses $^
+			state.o event_queue.o B.o events.o messages.o message_cache.o
+	$(COMPILER) -o vktui.exe -lncursesw $^
 
 
 
@@ -29,6 +30,8 @@ main.o: src/main.cpp $(HEADERS)
 	$(COMPILER) -c $<
 
 # другие классы
+message_cache.o: src/classes/message_cache.cpp $(HEADERS)
+	$(COMPILER) -c $<
 events.o: src/classes/events.cpp $(HEADERS)
 	$(COMPILER) -c $<
 messages.o: src/classes/messages.cpp $(HEADERS)
@@ -36,4 +39,4 @@ messages.o: src/classes/messages.cpp $(HEADERS)
 
 
 clean:
-	rm -rf `cat .gitignore`
+	rm -rf *.o *.exe

@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <curses.h>
+#include <string>
 
 #include "user_input.h"
 #include "classes/events.h"
@@ -15,11 +15,14 @@ User_input::User_input(State* _state, Event_queue* _event_queue, bool* _killswit
 
 void User_input::main_loop()
 {
-    char ch = 0;
+    // fflush(stdin);
+    wchar_t ch = 0;
 
-    while (ch != '\n')
+    while (ch != 13) // ENTER
     {
-        ch = getch();
+        state->notify_renderer();
+
+        ch = getwc(stdin);
 
         if (ch == 27) //ESC
         {
@@ -28,15 +31,23 @@ void User_input::main_loop()
         }
 
         state->append_to_input_text(ch);
-        state->notify_renderer();
     }
 
+    wstring message = state->get_input_text();
+    message.pop_back();
 
+    if (message[0] == 13)
+    {
+        state->clear_input_text();
+        return;
+    }
+    if (message.empty())
+        return;
 
-    Message* msg = new Message(0, "your message: " + state->get_input_text());
-    Event* event = new Event_new_message(msg);
-    event_queue->push(event);
+    message = L"you wrote: " + message;
 
+    state->push_debug_message(message);
     state->clear_input_text();
+    state->notify_renderer();
 
 }

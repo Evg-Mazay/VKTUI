@@ -27,7 +27,7 @@ public:
     Renderer(State* _state, bool* _killswitch);
     ~Renderer();
 
-    void print_debug_message(string text);
+    void print_debug_message(wstring text);
 
     void main_loop();
     

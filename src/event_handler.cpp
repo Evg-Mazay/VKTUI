@@ -1,6 +1,5 @@
 #include <unistd.h>
 
-
 #include "event_handler.h"
 
 Event_handler::Event_handler(State* _state, Event_queue* _event_queue, bool* _killswitch)

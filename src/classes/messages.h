@@ -8,11 +8,11 @@ using namespace std;
 class Message
 {
     int id;
-    string text;
+    wstring text;
 public:
-    Message(int _id, string _text);
+    Message(int _id, wstring _text);
     int get_id();
-    string get_text();
+    wstring get_text();
     
 };
 

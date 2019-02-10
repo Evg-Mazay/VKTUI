@@ -1,8 +1,8 @@
+#include <curses.h>
 #include <mutex>
 #include <condition_variable>
 #include <string>
 
-#include "globals.h"
 #include "renderer.h"
 #include "state.h"
 
@@ -26,7 +26,7 @@ void Renderer::init_curses()
     // keypad(stdscr, TRUE);
     noecho();
     // halfdelay(-1);
-    //wtimeout(stdscr, 33);
+    // wtimeout(stdscr, 33);
     // nodelay(stdscr, TRUE);
     // cbreak();
 
@@ -74,9 +74,10 @@ void Renderer::exit_curses()
     endwin();
 }
 
-void Renderer::print_debug_message(string text)
+void Renderer::print_debug_message(wstring text)
 {
-    wprintw(win_debug, "%s\n", text.c_str());
+    waddwstr(win_debug, text.c_str());
+    waddwstr(win_debug, L"\n");
 }
 
 
@@ -85,18 +86,18 @@ void Renderer::main_loop()
     unique_lock<mutex> lck(renderer_mutex);
     state->renderer_wait(&lck);
 
-    string debug_message = state->get_debug_message();
-    if (!debug_message.empty())
+    wstring debug_message = state->pop_debug_message();
+    while (!debug_message.empty())
     {
-        print_debug_message(state->get_debug_message());
-        state->clear_debug_message();
+        print_debug_message(debug_message);
+        debug_message = state->pop_debug_message();
     }
 
+    wclrtoeol(win_input);
     wmove(win_input, 2,0);
-    wprintw(win_input, "%s", state->get_input_text().c_str());
+    waddwstr(win_input, state->get_input_text().c_str());
 
     wrefresh(win_debug);
-    wrefresh(win_messages);
     wrefresh(win_input);
 }
 

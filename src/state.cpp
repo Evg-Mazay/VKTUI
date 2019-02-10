@@ -1,5 +1,6 @@
 
 #include <string>
+#include <thread>
 
 #include "state.h"
 
@@ -11,22 +12,26 @@ State::State(bool* _killswitch)
 }
 
 
-void State::set_debug_message(string text)
+void State::push_debug_message(wstring text)
 {
-    lock_guard<mutex> lck(state_mutex);
-    debug_message = text;
+    // lock_guard<mutex> lck(state_mutex);
+    // state_mutex.lock();
+    debug_messages.push_back(text);
+    // state_mutex.unlock();
 }
 
-string State::get_debug_message()
+wstring State::pop_debug_message()
 {
-    lock_guard<mutex> lck(state_mutex);
-    return debug_message;
-}
+    // lock_guard<mutex> lck(state_mutex);
+    // state_mutex.lock();
+    if (debug_messages.empty())
+        return wstring();
 
-void State::clear_debug_message()
-{
-    lock_guard<mutex> lck(state_mutex);
-    debug_message.clear();
+    wstring text = debug_messages.back();
+    debug_messages.pop_back();
+    // state_mutex.unlock();
+
+    return text;
 }
 
 
@@ -40,12 +45,12 @@ void State::renderer_wait(unique_lock<mutex> * lck)
     state_changed.wait(*lck);
 }
 
-void State::append_to_input_text(char ch)
+void State::append_to_input_text(wchar_t ch)
 {
     input_text += ch;
 }
 
-string State::get_input_text()
+wstring State::get_input_text()
 {
     return input_text;
 }

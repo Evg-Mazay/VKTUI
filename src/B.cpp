@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <random>
 
 #include "B.h"
 #include "event_queue.h"
@@ -16,10 +17,10 @@ B::B(Event_queue* _event_queue, bool* _killswitch)
 
 void B::debug_generate_event()
 {
-    sleep(2);
+    sleep(1);
 
     int id = time(0)%1000;
-    Message* msg = new Message(id, "test event msg, id: " + to_string(id));
+    Message* msg = new Message(id, L"test event msg, id: " + to_wstring(id));
 
     Event* event = new Event_new_message(msg);
 

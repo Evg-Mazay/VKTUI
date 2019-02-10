@@ -1,7 +1,7 @@
 #include <curses.h>
 #include <thread>
+#include <locale.h>
 
-#include "globals.h"
 #include "renderer.h"
 #include "state.h"
 #include "user_input.h"
@@ -38,6 +38,8 @@ void b_thread_main(B* b, bool* killswitch)
 
 int main(void)
 {
+    setlocale(LC_ALL, "");
+
     bool killswitch = false;
 
     State state(&killswitch);
