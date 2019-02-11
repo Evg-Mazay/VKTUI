@@ -1,5 +1,6 @@
 # дефайн нужен для поддержки wchar
-COMPILER = g++ --std=c++11 -Wall -D_XOPEN_SOURCE_EXTENDED
+COMPILER = g++ --std=c++11 -Wall -D_XOPEN_SOURCE_EXTENDED `pkg-config --cflags ncursesw`
+FLAGS = `pkg-config --libs ncursesw` -lpthread
 
 # При изменении любого .h всё нужно перекомпилить (т.к. инклюды)
 HEADERS = src/*.h src/classes/*.h
@@ -9,7 +10,7 @@ launch: vktui.exe
 
 vktui.exe: main.o event_handler.o renderer.o user_input.o \
 			state.o event_queue.o B.o events.o messages.o message_cache.o
-	$(COMPILER) -o vktui.exe -lncursesw $^
+	$(COMPILER) -o vktui.exe $^ $(FLAGS)
 
 
 
