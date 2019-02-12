@@ -30,6 +30,12 @@ void User_input::main_loop()
             return;
         }
 
+        if (ch == 127) // BACKSPACE
+        {
+            state->backspace_in_input_text();
+            continue;
+        }
+
         state->append_to_input_text(ch);
     }
 

@@ -24,6 +24,7 @@ public:
 
     wstring get_input_text();
     void clear_input_text();
+    void backspace_in_input_text();
     void append_to_input_text(wchar_t ch);
 
     void push_debug_message(wstring text);

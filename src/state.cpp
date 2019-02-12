@@ -14,22 +14,20 @@ State::State(bool* _killswitch)
 
 void State::push_debug_message(wstring text)
 {
-    // lock_guard<mutex> lck(state_mutex);
-    // state_mutex.lock();
+    lock_guard<mutex> lck(state_mutex);
     debug_messages.push_back(text);
-    // state_mutex.unlock();
 }
 
 wstring State::pop_debug_message()
 {
-    // lock_guard<mutex> lck(state_mutex);
-    // state_mutex.lock();
+    lock_guard<mutex> lck(state_mutex);
+
     if (debug_messages.empty())
-        return wstring();
+        return wstring(); // Здесь не анлочится, поэтому дедлок
 
     wstring text = debug_messages.back();
+
     debug_messages.pop_back();
-    // state_mutex.unlock();
 
     return text;
 }
@@ -58,4 +56,10 @@ wstring State::get_input_text()
 void State::clear_input_text()
 {
     input_text.clear();
+}
+
+void State::backspace_in_input_text()
+{
+    if (!input_text.empty())
+        input_text.pop_back();
 }
