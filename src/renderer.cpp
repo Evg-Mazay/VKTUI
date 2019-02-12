@@ -2,7 +2,9 @@
 #include <mutex>
 #include <condition_variable>
 #include <string>
+#include <signal.h>
 
+#include "globals.h"
 #include "renderer.h"
 #include "state.h"
 
@@ -12,12 +14,63 @@ Renderer::Renderer(State* _state, bool* _killswitch)
 {
     state = _state;
     killswitch = _killswitch;
+
+    signal_processing_class = this;
+    signal(SIGWINCH, WINCH_signal_handler);
+
     init_curses();
 }
 
 Renderer::~Renderer()
 {
     exit_curses();
+}
+
+void Renderer::reset_windows(const int WIN)
+{
+
+    if (WIN & WIN_DIALOGS)
+    {
+        werase(win_dialogs);
+        box(win_dialogs, 0 , 0);
+        wprintw(win_dialogs, "dialogs:\n\n");
+        wrefresh(win_dialogs);
+    }
+
+    if (WIN & WIN_MESSAGES)
+    {
+        werase(win_messages);
+        box(win_messages, 0 , 0);
+        wprintw(win_messages, "messages:\n\n");
+        wrefresh(win_messages);
+    }
+
+    if (WIN & WIN_INPUT)
+    {
+        werase(win_input);
+        box(win_input, 0 , 0);
+        wprintw(win_input, "input:\n\n");
+        wrefresh(win_input);
+    }
+
+    if (WIN & WIN_DEBUG)
+    {
+        werase(win_debug);
+        box(win_debug, '*' , '*');
+        wprintw(win_debug, "debug:\n\n");
+        wrefresh(win_debug);
+    }
+}
+
+void Renderer::resize_terminal()
+{
+    exit_curses();
+    init_curses();
+}
+
+void WINCH_signal_handler(int signum)
+{
+    signal_processing_class->resize_terminal();
 }
 
 void Renderer::init_curses()
@@ -46,23 +99,10 @@ void Renderer::init_curses()
     int debug_y = 0, debug_x = COLS*2/3;
     win_debug = newwin(debug_h, debug_w, debug_y, debug_x);
 
-    box(win_dialogs, 0 , 0);
-    box(win_messages, 0 , 0);
-    box(win_input, 0 , 0);
-    box(win_debug, '*' , '*');
-
     mvprintw(LINES-1, 0, "PRESS ESC TO EXIT");
     refresh();
 
-    wprintw(win_dialogs, "dialogs:\n\n");
-    wprintw(win_messages, "messages:\n\n");
-    wprintw(win_input, "input:\n\n");
-    wprintw(win_debug, "debug:\n\n");
-
-    wrefresh(win_dialogs);
-    wrefresh(win_messages);
-    wrefresh(win_input);
-    wrefresh(win_debug);
+    reset_windows(WIN_DIALOGS | WIN_MESSAGES | WIN_INPUT | WIN_DEBUG);
 }
 
 void Renderer::exit_curses()

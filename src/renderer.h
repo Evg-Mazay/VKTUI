@@ -7,6 +7,10 @@
 using namespace std;
 
 class State;
+class Renderer;
+
+static Renderer* signal_processing_class;
+void WINCH_signal_handler(int signum);
 
 class Renderer
 {
@@ -26,6 +30,10 @@ class Renderer
 public:
     Renderer(State* _state, bool* _killswitch);
     ~Renderer();
+
+    void resize_terminal();
+
+    void reset_windows(const int WIN);
 
     void print_debug_message(wstring text);
 
