@@ -1,32 +1,37 @@
+#include <stdio.h>
 #include <curses.h>
 #include <mutex>
 #include <condition_variable>
 #include <string>
-#include <signal.h>
 
-#include "globals.h"
-#include "renderer.h"
-#include "state.h"
+#include "Frontend.h"
 
-using namespace std;
-
-Renderer::Renderer(State* _state, bool* _killswitch)
+void Frontend::main_loop()
 {
-    state = _state;
-    killswitch = _killswitch;
+    /*
+    Тут не мешало бы разобраться с блокировкой, чтобы
+    backend не мог че-то печатать, пока main_loop не
+    заблокировался
+    */
+    unique_lock<mutex> lck(wait_mutex);
+    ready_to_refresh.wait(lck);
 
-    signal_processing_class = this;
-    signal(SIGWINCH, WINCH_signal_handler);
 
-    init_curses();
+    wrefresh(win_debug);
+
 }
 
-Renderer::~Renderer()
+void Frontend::refresh()
+{
+    ready_to_refresh.notify_one();
+}
+
+Frontend::~Frontend()
 {
     exit_curses();
 }
 
-void Renderer::reset_windows(const int WIN)
+void Frontend::reset_windows(const int WIN)
 {
 
     if (WIN & WIN_DIALOGS)
@@ -62,18 +67,8 @@ void Renderer::reset_windows(const int WIN)
     }
 }
 
-void Renderer::resize_terminal()
-{
-    exit_curses();
-    init_curses();
-}
 
-void WINCH_signal_handler(int signum)
-{
-    signal_processing_class->resize_terminal();
-}
-
-void Renderer::init_curses()
+void Frontend::init_curses()
 {
     initscr();
     // keypad(stdscr, TRUE);
@@ -105,7 +100,7 @@ void Renderer::init_curses()
     reset_windows(WIN_DIALOGS | WIN_MESSAGES | WIN_INPUT | WIN_DEBUG);
 }
 
-void Renderer::exit_curses()
+void Frontend::exit_curses()
 {
     delwin(win_dialogs);
     delwin(win_messages);
@@ -114,33 +109,9 @@ void Renderer::exit_curses()
     endwin();
 }
 
-void Renderer::print_debug_message(wstring text)
+void Frontend::print_debug_message(wstring text)
 {
     waddwstr(win_debug, text.c_str());
     waddwstr(win_debug, L"\n");
 }
-
-
-void Renderer::main_loop()
-{
-    unique_lock<mutex> lck(renderer_mutex);
-    state->renderer_wait(&lck);
-
-    wstring debug_message = state->pop_debug_message();
-    while (!debug_message.empty())
-    {
-        print_debug_message(debug_message);
-        debug_message = state->pop_debug_message();
-    }
-
-    wclrtoeol(win_input);
-    wmove(win_input, 2,0);
-    waddwstr(win_input, state->get_input_text().c_str());
-
-    wrefresh(win_debug);
-    wrefresh(win_input);
-}
-
-
-
 

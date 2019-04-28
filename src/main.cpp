@@ -1,64 +1,70 @@
+#include <stdio.h>
 #include <curses.h>
 #include <thread>
+#include <unistd.h>
 #include <locale.h>
 
-#include "renderer.h"
-#include "state.h"
-#include "user_input.h"
-#include "event_handler.h"
-#include "event_queue.h"
-#include "B.h"
+#include "Network.h"
+#include "Frontend.h"
+#include "Backend.h"
+#include "Database.h"
 
 using namespace std;
 
-void renderer_main(Renderer* renderer, bool* killswitch)
+void network_thread_main(Network* network)
 {
-    while (! *killswitch)
-        renderer->main_loop();
+    while (true)
+        network->main_loop();
 }
 
-void user_input_main(User_input* user_input, bool* killswitch)
+void frontend_thread_main(Frontend* frontend)
 {
-    while(! *killswitch)
-        user_input->main_loop();
-
+    while (true)
+        frontend->main_loop();
 }
 
-void event_handler_main(Event_handler* event_handler, bool* killswitch)
+void backend_thread_main(Backend* backend)
 {
-    while (! *killswitch)
-        event_handler->main_loop();
+    while (true)
+        backend->main_loop();
 }
 
-void b_thread_main(B* b, bool* killswitch)
-{
-    while (! *killswitch)
-        b->debug_generate_event();
-}
-
-int main(void)
+void init(Network* network, Frontend* frontend, \
+            Backend* backend, Database* database)
 {
     setlocale(LC_ALL, "");
 
-    bool killswitch = false;
+    network->backend = backend;
 
-    State state(&killswitch);
-    Event_queue event_queue;
+    frontend->backend = backend;
+    frontend->database = database;
 
-    B b(&event_queue, &killswitch);
-    Renderer renderer(&state, &killswitch);
-    User_input user_input(&state, &event_queue, &killswitch);
-    Event_handler event_handler(&state, &event_queue, &killswitch);
+    backend->network = network;
+    backend->frontend = frontend;
+    backend->database = database;
 
-    thread b_thread(b_thread_main, &b, &killswitch);
-    thread renderer_thread(renderer_main, &renderer, &killswitch);
-    thread user_input_thread(user_input_main, &user_input, &killswitch);
-    thread event_handler_thread(event_handler_main, &event_handler, &killswitch);
+    frontend->init_curses();
 
-    b_thread.join();
-    renderer_thread.join();
-    user_input_thread.join();
-    event_handler_thread.join();
+    database->init_database("cache.db");
+}
+
+
+int main(void)
+{
+    Network network;
+    Frontend frontend;
+    Backend backend;
+    Database database;
+
+    init(&network, &frontend, &backend, &database);
+
+    thread network_thread(network_thread_main, &network);
+    thread frontend_thread(frontend_thread_main, &frontend);
+    thread backend_thread(backend_thread_main, &backend);
+
+    network_thread.join();
+    frontend_thread.join();
+    backend_thread.join();
 
     return 0;
 }
