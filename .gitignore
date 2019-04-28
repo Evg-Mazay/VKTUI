@@ -2,4 +2,5 @@
 *.exe
 *.o
 *.swp
-
+*.log
+*.db

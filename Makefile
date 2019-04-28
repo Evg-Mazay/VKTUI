@@ -8,8 +8,15 @@ HEADERS = src/*.h
 launch: vktui.exe
 	./vktui.exe
 
-vktui.exe: main.o Backend.o Database.o Frontend.o Network.o
+vktui.exe: main.o Backend.o Database.o Frontend.o User_input.o Network.o
 	$(COMPILER) -o vktui.exe $^ $(FLAGS)
+
+
+testfront: vktui_frontend_test.exe
+	./vktui_frontend_test.exe
+
+vktui_frontend_test.exe: Frontend.o User_input.o frontend_test.o
+	$(COMPILER) -o vktui_frontend_test.exe $^ $(FLAGS)
 
 
 # основные классы
@@ -23,7 +30,16 @@ Frontend.o: src/Frontend.cpp $(HEADERS)
 	$(COMPILER) -c $<
 Network.o: src/Network.cpp $(HEADERS)
 	$(COMPILER) -c $<
+User_input.o: src/User_input.cpp $(HEADERS)
+	$(COMPILER) -c $<
+
+# вспомогательные классы
+
+
+# тесты
+frontend_test.o: src/tests/frontend_test.cpp $(HEADERS)
+	$(COMPILER) -c $<
 
 
 clean:
-	rm -rf *.o *.exe
+	rm -rf *.o *.exe *.log
