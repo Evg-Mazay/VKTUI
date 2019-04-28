@@ -11,5 +11,4 @@ void Backend::main_loop()
     sleep(1);
 
     frontend->print_debug_message(L"Привет, мир!");
-    frontend->refresh();
 }

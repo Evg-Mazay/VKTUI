@@ -1,6 +1,8 @@
-#include <stdio.h>
+// #include <stdio.h>
 #include <sqlite3.h>
 #include <string>
+#include <codecvt>
+#include <iostream>
 
 #include "Database.h"
 
@@ -52,16 +54,10 @@ int Database::init_database(const char* filename)
                     ID INTEGER PRIMARY KEY AUTOINCREMENT,\
                     message TEXT);");
 
-    // const char16_t str = u"Хай";
-    wchar_t str[] = L"Хорошая строчка";
-
-    add_debug_message((char *)str);
-
-
-    /*
-короче, надо делать sql_prepare16
-
-    */
+    // wstring_convert<codecvt_utf8<wchar_t>> conv;
+    // std::wstring name = L"ひらがな";
+    // string converted = conv.to_bytes(name);
+    // add_debug_message(converted.c_str());
 
     open_read("cache.db");
 

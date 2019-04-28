@@ -2,8 +2,8 @@
 #define __FRONTEND__
 
 #include <curses.h>
-#include <mutex>
-#include <condition_variable>
+
+#include "User_input.h"
 
 #define WIN_DIALOGS 1
 #define WIN_MESSAGES 2
@@ -15,12 +15,10 @@ using namespace std;
 class Network;
 class Backend;
 class Database;
+class User_input;
 
 class Frontend
 {
-    mutex wait_mutex;
-    condition_variable ready_to_refresh;
-
     Backend* backend;
     Database* database;
 
@@ -32,18 +30,19 @@ class Frontend
     void init_curses();
     void exit_curses();
 
-    friend void init(Network* network, Frontend* frontend, \
+    friend void init(Network* network, Frontend* frontend, User_input* user_input,\
                         Backend* backend, Database* database);
 
 public:
 
     void print_debug_message(wstring text);
-
-    void refresh();
-
-    void main_loop();
+    void refresh_windows(const int WIN);
     void reset_windows(const int WIN);
+    void show_input_text(wstring text);
+    void clear_input();
     ~Frontend();
+
+    static void main_loop();
     
 };
 

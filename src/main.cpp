@@ -17,10 +17,9 @@ void network_thread_main(Network* network)
         network->main_loop();
 }
 
-void frontend_thread_main(Frontend* frontend)
+void input_thread_main(User_input* user_input)
 {
-    while (true)
-        frontend->main_loop();
+    while (user_input->main_loop());
 }
 
 void backend_thread_main(Backend* backend)
@@ -29,8 +28,8 @@ void backend_thread_main(Backend* backend)
         backend->main_loop();
 }
 
-void init(Network* network, Frontend* frontend, \
-            Backend* backend, Database* database)
+void init(Network* network, Frontend* frontend, User_input* user_input,\
+                        Backend* backend, Database* database)
 {
     setlocale(LC_ALL, "");
 
@@ -45,6 +44,8 @@ void init(Network* network, Frontend* frontend, \
 
     frontend->init_curses();
 
+    user_input->frontend = frontend;
+
     database->init_database("cache.db");
 }
 
@@ -55,15 +56,16 @@ int main(void)
     Frontend frontend;
     Backend backend;
     Database database;
+    User_input user_input;
 
-    init(&network, &frontend, &backend, &database);
+    init(&network, &frontend, &user_input, &backend, &database);
 
+    thread input_thread(input_thread_main, &user_input);
     thread network_thread(network_thread_main, &network);
-    thread frontend_thread(frontend_thread_main, &frontend);
     thread backend_thread(backend_thread_main, &backend);
 
+    input_thread.join();
     network_thread.join();
-    frontend_thread.join();
     backend_thread.join();
 
     return 0;

@@ -4,27 +4,25 @@
 #include <condition_variable>
 #include <string>
 
+#include "User_input.h"
 #include "Frontend.h"
 
-void Frontend::main_loop()
+
+void Frontend::refresh_windows(const int WIN)
 {
-    /*
-    Тут не мешало бы разобраться с блокировкой, чтобы
-    backend не мог че-то печатать, пока main_loop не
-    заблокировался
-    */
-    unique_lock<mutex> lck(wait_mutex);
-    ready_to_refresh.wait(lck);
+    if (WIN & WIN_DIALOGS)
+        wrefresh(win_dialogs);
 
+    if (WIN & WIN_MESSAGES)
+        wrefresh(win_messages);
 
-    wrefresh(win_debug);
+    if (WIN & WIN_INPUT)
+        wrefresh(win_input);
 
+    if (WIN & WIN_DEBUG)
+        wrefresh(win_debug);
 }
 
-void Frontend::refresh()
-{
-    ready_to_refresh.notify_one();
-}
 
 Frontend::~Frontend()
 {
@@ -76,7 +74,7 @@ void Frontend::init_curses()
     // halfdelay(-1);
     // wtimeout(stdscr, 33);
     // nodelay(stdscr, TRUE);
-    // cbreak();
+    cbreak();
 
     int dialogs_h = LINES-2, dialogs_w = COLS/3;
     int dialogs_y = 0, dialogs_x = 0;
@@ -93,6 +91,9 @@ void Frontend::init_curses()
     int debug_h = LINES-2, debug_w = COLS/3;
     int debug_y = 0, debug_x = COLS*2/3;
     win_debug = newwin(debug_h, debug_w, debug_y, debug_x);
+
+    scrollok(win_debug, 1);
+    scrollok(win_input, 1);
 
     mvprintw(LINES-1, 0, "PRESS ESC TO EXIT");
     refresh();
@@ -111,7 +112,24 @@ void Frontend::exit_curses()
 
 void Frontend::print_debug_message(wstring text)
 {
+    // if (getcury(win_debug) >= getmaxy(win_debug) - 1)
+    // {
+    //     reset_windows(WIN_DEBUG);
+    //     move(0,0);
+    // }
+
+    text += L"\n";
     waddwstr(win_debug, text.c_str());
-    waddwstr(win_debug, L"\n");
+    refresh_windows(WIN_DEBUG);
 }
+
+void Frontend::show_input_text(wstring text)
+{
+    reset_windows(WIN_INPUT);
+    waddwstr(win_input, text.c_str());
+    refresh_windows(WIN_INPUT);
+}
+
+
+
 

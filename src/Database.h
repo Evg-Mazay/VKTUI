@@ -6,6 +6,7 @@
 class Network;
 class Frontend;
 class Backend;
+class User_input;
 
 class Database
 {
@@ -18,13 +19,13 @@ class Database
 
     int sql_result_parser(void*,int,char**,char**);
 
-    friend void init(Network* network, Frontend* frontend, \
+    friend void init(Network* network, Frontend* frontend, User_input* user_input,\
                         Backend* backend, Database* database);
 
 public:
     int run_read(const char* command);
     int run_write(const char* command);
-
+    
     void add_debug_message(const char* message);
 
     ~Database();
