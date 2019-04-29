@@ -2,9 +2,9 @@
 
 #include "Network.h"
 
-void Network::main_loop()
+int Network::main_loop()
 {
-    
+    return 0;
 }
 
 // при редактировании сообщения, прикольно было бы отображать предыдущие версии

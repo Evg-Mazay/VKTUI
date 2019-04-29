@@ -16,7 +16,7 @@ class Backend
                         Backend* backend, Database* database);
 
 public:
-    void main_loop();
+    int main_loop();
     
 };
 

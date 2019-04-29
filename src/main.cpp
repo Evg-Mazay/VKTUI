@@ -13,8 +13,7 @@ using namespace std;
 
 void network_thread_main(Network* network)
 {
-    while (true)
-        network->main_loop();
+    while (network->main_loop());
 }
 
 void input_thread_main(User_input* user_input)
@@ -24,8 +23,7 @@ void input_thread_main(User_input* user_input)
 
 void backend_thread_main(Backend* backend)
 {
-    while (true)
-        backend->main_loop();
+    while (backend->main_loop());
 }
 
 void init(Network* network, Frontend* frontend, User_input* user_input,\
@@ -37,14 +35,13 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
 
     frontend->backend = backend;
     frontend->database = database;
+    frontend->init_curses();
+
+    user_input->frontend = frontend;
 
     backend->network = network;
     backend->frontend = frontend;
     backend->database = database;
-
-    frontend->init_curses();
-
-    user_input->frontend = frontend;
 
     database->init_database("cache.db");
 }
