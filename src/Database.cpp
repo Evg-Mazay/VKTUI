@@ -3,6 +3,8 @@
 #include <string>
 #include <codecvt>
 #include <iostream>
+#include <ctime>
+#include <stdlib.h>
 
 #include "Database.h"
 
@@ -24,18 +26,19 @@ Database::~Database()
     sqlite3_close(db_instance_read);
 }
 
-int Database::run_read(const char* command)
+int Database::run_read(const char* command, void* arg, int (*callback)
+                                                        (void*, int, char**, char**))
 {
-    return sqlite3_exec(db_instance_read, command, NULL, NULL, NULL);
+    return sqlite3_exec(db_instance_read, command, callback, arg, &errormesg);
 }
 
-int Database::run_write(const char* command)
+int Database::run_write(const char* command, void* arg, int (*callback)
+                                                        (void*, int, char**, char**))
 {
-    int error = sqlite3_exec(db_instance_write, command, NULL, NULL, NULL);
-    // char* errormesg;
-    // int error = sqlite3_exec(db_instance_write, command, NULL, NULL, &errormesg);
-    // printf("error: %s\n", errormesg);
-    // sqlite3_free(errormesg);
+    if (errormesg)
+        sqlite3_free(errormesg);
+
+    int error = sqlite3_exec(db_instance_write, command, callback, arg, &errormesg);
     return error;
 }
 
@@ -50,16 +53,18 @@ int Database::sql_result_parser(void* null, int count, char** data, char** colum
 int Database::init_database(const char* filename)
 {
     open_write(filename);
-    run_write("CREATE TABLE debug_messages(\
+    run_write("CREATE TABLE debug_messages (\
                     ID INTEGER PRIMARY KEY AUTOINCREMENT,\
-                    message TEXT);");
+                    message TEXT);", NULL, NULL);
 
-    // wstring_convert<codecvt_utf8<wchar_t>> conv;
-    // std::wstring name = L"ひらがな";
-    // string converted = conv.to_bytes(name);
-    // add_debug_message(converted.c_str());
+    run_write("CREATE TABLE messages (\
+                    'id' INTEGER,\
+                    'date' DATE,\
+                    'from' INTEGER,\
+                    'to' INTEGER,\
+                    'text' TEXT);", NULL, NULL);
 
-    open_read("cache.db");
+    open_read(filename);
 
     return 0;
 }
@@ -71,11 +76,59 @@ void Database::add_debug_message(const char* message)
     str.append(message);
     str.append("');");
 
-    // printf("%s\n", str.c_str());
-
-    run_write(str.c_str());
+    run_write(str.c_str(), NULL, NULL);
 }
 
+int Database::add_out_message(int id, int from, int to, wstring text)
+{
+    string str("INSERT INTO messages VALUES (" +
+        to_string(id)           + "," +
+        to_string(time(NULL))   + "," +
+        to_string(from)         + "," +
+        to_string(to)           + "," +
+        "'" + to_utf8(text) + "'" + ");");
+
+    return run_write(str.c_str(), NULL, NULL);
+}
+
+vector<Message_data> Database::restore_last_X_messages(int X)
+{
+    string str("SELECT * FROM messages ORDER BY date LIMIT " + to_string(X) + ";");
+
+    vector<Message_data> vec;
+
+    auto callback = [](void* vec, int count, char** data, char** columns) -> int
+    {
+        Message_data msg;
+        msg.id = atoi(data[0]);
+        msg.time = atoi(data[1]);
+        msg.from = atoi(data[2]);
+        msg.to = atoi(data[3]);
+        msg.text = new wstring(data[4], data[4] + strlen(data[4]));
+        
+        ((vector<Message_data>*)vec)->push_back(msg);
+        return 0;
+    };
+
+    run_read(str.c_str(), (void *) &vec, callback);
+    
+    return vec;
+}
+
+
+string Database::to_utf8(wstring text)
+{
+    string converted = converter.to_bytes(text);
+    return converted;
+}
+
+wstring Database::last_error()
+{
+    if (errormesg)
+        return wstring(errormesg, errormesg + strlen(errormesg));
+    else
+        return wstring(L"OK");
+}
 
 
 

@@ -2,8 +2,10 @@
 #define __FRONTEND__
 
 #include <curses.h>
+#include <vector>
 
 #include "User_input.h"
+#include "classes/Event.h"
 
 #define WIN_DIALOGS 1
 #define WIN_MESSAGES 2
@@ -41,6 +43,8 @@ public:
     void show_input_text(wstring text);
     void clear_input();
     ~Frontend();
+
+    void add_messages(vector<Message_data> messages);
 
     static void main_loop();
     

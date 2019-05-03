@@ -92,6 +92,8 @@ void Frontend::init_curses()
     int debug_y = 0, debug_x = COLS*2/3;
     win_debug = newwin(debug_h, debug_w, debug_y, debug_x);
 
+    scrollok(win_dialogs, 1);
+    scrollok(win_messages, 1);
     scrollok(win_debug, 1);
     scrollok(win_input, 1);
 
@@ -128,6 +130,17 @@ void Frontend::show_input_text(wstring text)
     reset_windows(WIN_INPUT);
     waddwstr(win_input, text.c_str());
     refresh_windows(WIN_INPUT);
+}
+
+void Frontend::add_messages(std::vector<Message_data> messages)
+{
+    for(std::vector<Message_data>::iterator it = messages.begin();
+                                                             it != messages.end(); ++it)
+    {
+        print_debug_message(*it->text);
+        delete it->text;
+    }
+
 }
 
 

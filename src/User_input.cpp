@@ -15,7 +15,7 @@ int User_input::main_loop()
 
     while (ch != 13) // ENTER
     {
-        backend->queue_in_push(Event(EDIT_INPUT_MESSAGE, 
+        backend->queue_in_push(Event(EDIT_INPUT_MESSAGE,
                                     event_factory.get_event_data_message(&text)));
 
         ch = getwc(stdin);

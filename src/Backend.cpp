@@ -27,18 +27,37 @@ void Backend::process_in_queue()
     {
         Event event = queue_in.pop();
 
+        int error;
+
         switch (event.get_type())
         {
             case SEND_INPUT_MESSAGE:
             
-                frontend->print_debug_message(*event.get_data().message_data.text);
+                error = database->add_out_message(0, 
+                    23, 
+                    24, 
+                    *event.get_data().message_data.text);
+
+                frontend->print_debug_message(database->last_error());
+
                 delete event.get_data().message_data.text;
                 break;
+
 
             case EDIT_INPUT_MESSAGE:
 
                 frontend->show_input_text(*event.get_data().message_data.text);
                 break;
+
+
+
+            case RESTORE_MESSAGES:
+
+                frontend->add_messages(database->restore_last_X_messages(
+                                                        event.get_data().messages_count));
+                break;
+
+
         }
     }
 }

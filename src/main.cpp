@@ -8,6 +8,7 @@
 #include "Frontend.h"
 #include "Backend.h"
 #include "Database.h"
+#include "classes/Event.h"
 
 using namespace std;
 
@@ -45,6 +46,10 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
     backend->database = database;
 
     database->init_database("cache.db");
+
+    Event_data data;
+    data.messages_count = 3;
+    backend->queue_in_push(Event(RESTORE_MESSAGES, data));
 }
 
 
