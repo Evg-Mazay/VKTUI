@@ -38,6 +38,7 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
     frontend->init_curses();
 
     user_input->frontend = frontend;
+    user_input->backend = backend;
 
     backend->network = network;
     backend->frontend = frontend;

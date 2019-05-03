@@ -4,12 +4,12 @@
 #include <string>
 
 #include "Frontend.h"
+#include "Backend.h"
+#include "classes/Event.h"
 
 using namespace std;
 
-class Frontend;
 class Network;
-class Backend;
 class Database;
 
 class User_input
@@ -17,6 +17,9 @@ class User_input
     enum {ESCAPE, TEST};
 
     Frontend* frontend;
+    Backend* backend;
+
+    Event_factory event_factory;
 
     wstring text;
 

@@ -1,7 +1,9 @@
 #include <curses.h>
 #include <string>
 
-#include "user_input.h"
+#include "User_input.h"
+#include "Event.h"
+#include "Backend.h"
 
 // return 0 - выход из программы
 // return 1 - продолжить
@@ -13,7 +15,8 @@ int User_input::main_loop()
 
     while (ch != 13) // ENTER
     {
-        frontend->show_input_text(text);
+        backend->queue_in_push(Event(EDIT_INPUT_MESSAGE, 
+                                    event_factory.get_event_data_message(&text)));
 
         ch = getwc(stdin);
 
@@ -36,7 +39,8 @@ int User_input::main_loop()
     if (text.empty())
         return 1;
 
-    frontend->print_debug_message(text);
+    backend->queue_in_push(Event(SEND_INPUT_MESSAGE, 
+                                    event_factory.get_event_data_message(text)));
 
     return 1;
 }
