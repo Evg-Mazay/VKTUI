@@ -4,6 +4,7 @@
 #include <vector>
 #include <mutex>
 #include <condition_variable>
+#include <ctime>
 
 #include "Backend.h"
 #include "Frontend.h"
@@ -33,7 +34,8 @@ void Backend::process_in_queue()
         {
             case SEND_INPUT_MESSAGE:
             
-                error = database->add_out_message(0, 
+                error = database->add_message(0,
+                    time(NULL),
                     23, 
                     24, 
                     *event.get_data().message_data.text);

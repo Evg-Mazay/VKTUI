@@ -3,7 +3,6 @@
 #include <string>
 #include <codecvt>
 #include <iostream>
-#include <ctime>
 #include <stdlib.h>
 
 #include "Database.h"
@@ -43,13 +42,6 @@ int Database::run_write(const char* command, void* arg, int (*callback)
 }
 
 
-int Database::sql_result_parser(void* null, int count, char** data, char** columns)
-{
-
-    // frontend->print_debug_message(new wstring(data[1]));
-    return 0;
-}
-
 int Database::init_database(const char* filename)
 {
     open_write(filename);
@@ -79,11 +71,12 @@ void Database::add_debug_message(const char* message)
     run_write(str.c_str(), NULL, NULL);
 }
 
-int Database::add_out_message(int id, int from, int to, wstring text)
+int Database::add_message(int id, long int date, int from, int to, wstring text)
 {
+    // НЕ ПОДДЕРЖИВАЕТ КАВЫЧКИ В ТЕКСТЕ
     string str("INSERT INTO messages VALUES (" +
         to_string(id)           + "," +
-        to_string(time(NULL))   + "," +
+        to_string(date)         + "," +
         to_string(from)         + "," +
         to_string(to)           + "," +
         "'" + to_utf8(text) + "'" + ");");
@@ -93,7 +86,8 @@ int Database::add_out_message(int id, int from, int to, wstring text)
 
 vector<Message_data> Database::restore_last_X_messages(int X)
 {
-    string str("SELECT * FROM messages ORDER BY date LIMIT " + to_string(X) + ";");
+    string str("SELECT [id], [date], [from], [to], [text] FROM messages\
+                ORDER BY date LIMIT " + to_string(X) + ";");
 
     vector<Message_data> vec;
 
