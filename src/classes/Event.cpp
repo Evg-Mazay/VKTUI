@@ -22,19 +22,9 @@ union Event_data Event::get_data()
 }
 
 
-
-Event_data Event_factory::get_event_data_message(const std::wstring* text)
-{
-    Event_data ev;
-    Message_data* msg = new Message_data();
-    msg->text = text;
-    ev.message_data = *msg;
-    
-    return ev;
-}
-
 Event_data Event_factory::get_event_data_message(std::wstring text)
 {
+    // Проверить на утечку
     Event_data ev;
     Message_data* msg = new Message_data();
     msg->text = new std::wstring(text);

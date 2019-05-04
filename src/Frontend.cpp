@@ -76,6 +76,9 @@ void Frontend::init_curses()
     // nodelay(stdscr, TRUE);
     cbreak();
 
+    // start_color();
+    // init_pair(1, COLOR_YELLOW, COLOR_GREEN);
+
     int dialogs_h = LINES-2, dialogs_w = COLS/3;
     int dialogs_y = 0, dialogs_x = 0;
     win_dialogs = newwin(dialogs_h, dialogs_w, dialogs_y, dialogs_x);
@@ -132,13 +135,27 @@ void Frontend::show_input_text(wstring text)
     refresh_windows(WIN_INPUT);
 }
 
+void Frontend::add_message(Message_data message)
+{
+    wattrset(win_messages, WA_UNDERLINE);
+    waddwstr(win_messages, to_wstring(message.from).c_str());
+    wattrset(win_messages, 0);
+
+    waddwstr(win_messages, L": ");
+    waddwstr(win_messages, (*message.text).c_str());
+    waddwstr(win_messages, L"\n");
+
+    refresh_windows(WIN_MESSAGES);
+    // Проверить на утечку
+    // delete message.text;
+}
+
 void Frontend::add_messages(std::vector<Message_data> messages)
 {
     for(std::vector<Message_data>::iterator it = messages.begin();
                                                              it != messages.end(); ++it)
     {
-        print_debug_message(*it->text);
-        delete it->text;
+        add_message(*it);
     }
 
 }

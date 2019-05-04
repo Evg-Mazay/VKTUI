@@ -18,6 +18,7 @@ struct Message_data
 
 union Event_data
 {
+    std::wstring* message_pointer;
     int messages_count;
     Message_data message_data;
 };
@@ -36,7 +37,6 @@ public:
 class Event_factory
 {
 public:
-    Event_data get_event_data_message(const std::wstring* text);
     Event_data get_event_data_message(std::wstring text);
 
     

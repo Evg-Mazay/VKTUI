@@ -41,6 +41,8 @@ void Backend::process_in_queue()
                     *event.get_data().message_data.text);
 
                 frontend->print_debug_message(database->last_error());
+                if (!error)
+                    frontend->add_message(event.get_data().message_data);
 
                 delete event.get_data().message_data.text;
                 break;
@@ -48,7 +50,7 @@ void Backend::process_in_queue()
 
             case EDIT_INPUT_MESSAGE:
 
-                frontend->show_input_text(*event.get_data().message_data.text);
+                frontend->show_input_text(*event.get_data().message_pointer);
                 break;
 
 

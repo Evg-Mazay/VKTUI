@@ -47,6 +47,7 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
 
     database->init_database("cache.db");
 
+    //не всегда отображает сразу. Разобраться.
     Event_data data;
     data.messages_count = -1;
     backend->queue_in_push(Event(RESTORE_MESSAGES, data));

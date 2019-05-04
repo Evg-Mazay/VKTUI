@@ -44,6 +44,7 @@ public:
     void clear_input();
     ~Frontend();
 
+    void add_message(Message_data message);
     void add_messages(vector<Message_data> messages);
 
     static void main_loop();
