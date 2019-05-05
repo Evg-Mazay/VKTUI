@@ -16,13 +16,10 @@ int Backend::main_loop()
     std::unique_lock<std::mutex> lock(backend_main_mutex);
     new_event_queued.wait(lock);
 
-    process_in_queue();
-    process_out_queue();
-
-    return 1;
+    return process_in_queue() & process_out_queue();
 }
 
-void Backend::process_in_queue()
+int Backend::process_in_queue()
 {
     while (!queue_in.empty())
     {
@@ -32,6 +29,11 @@ void Backend::process_in_queue()
 
         switch (event.type)
         {
+            case EXIT:
+
+                return 0;
+
+
             case SEND_INPUT_MESSAGE:
             
                 error = database->add_message(0,
@@ -61,14 +63,15 @@ void Backend::process_in_queue()
                                                         event.data.messages_count));
                 break;
 
-
         }
     }
+
+    return 1;
 }
 
-void Backend::process_out_queue()
+int Backend::process_out_queue()
 {
-
+    return 1;
 }
 
 void Backend::queue_in_push(Event event)

@@ -27,8 +27,8 @@ class Backend
 
     friend void init(Network* network, Frontend* frontend, User_input* user_input,\
                         Backend* backend, Database* database);
-    void process_in_queue();
-    void process_out_queue();
+    int process_in_queue();
+    int process_out_queue();
 
 public:
     int main_loop();

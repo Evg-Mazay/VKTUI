@@ -6,6 +6,7 @@
 #define EDIT_INPUT_MESSAGE  0
 #define SEND_INPUT_MESSAGE  1
 #define RESTORE_MESSAGES    2
+#define EXIT                3
 
 struct Message_data
 {
@@ -29,6 +30,7 @@ struct Event
     union Event_data data;
 
     Event(int _type, Event_data _data);
+    Event(int _type);
 };
 
 

@@ -22,6 +22,7 @@ int User_input::main_loop()
 
         if (ch == 27) //ESC
         {
+            backend->queue_in_push(Event(EXIT));
             return 0;
         }
 
