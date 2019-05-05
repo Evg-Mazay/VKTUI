@@ -1,6 +1,7 @@
 // #include <stdio.h>
 #include <sqlite3.h>
 #include <string>
+#include <cstring>
 #include <codecvt>
 #include <iostream>
 #include <stdlib.h>
@@ -123,7 +124,7 @@ string Database::to_utf8(wstring text)
 wstring Database::last_error()
 {
     if (errormesg)
-        return wstring(errormesg, errormesg + strlen(errormesg));
+        return wstring(errormesg, errormesg + std::strlen(errormesg));
     else
         return wstring(L"OK");
 }

@@ -2,7 +2,7 @@
 #include <string>
 
 #include "User_input.h"
-#include "Event.h"
+#include "classes/Event.h"
 #include "Backend.h"
 
 // return 0 - выход из программы
