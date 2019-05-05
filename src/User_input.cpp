@@ -15,8 +15,7 @@ int User_input::main_loop()
 
     while (ch != 13) // ENTER
     {
-        Event_data data;
-        data.message_pointer = &text;
+        Event_data data{&text};
         backend->queue_in_push(Event(EDIT_INPUT_MESSAGE, data));
 
         ch = getwc(stdin);
@@ -40,8 +39,9 @@ int User_input::main_loop()
     if (text.empty())
         return 1;
 
-    backend->queue_in_push(Event(SEND_INPUT_MESSAGE, 
-                                    event_factory.get_event_data_message(text)));
+    Event_data data;
+    data.message_data = new Message_data{0,1,23,3,wstring(text)};
+    backend->queue_in_push(Event(SEND_INPUT_MESSAGE, data));
 
     return 1;
 }

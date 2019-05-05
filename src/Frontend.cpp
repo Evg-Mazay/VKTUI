@@ -69,11 +69,7 @@ void Frontend::reset_windows(const int WIN)
 void Frontend::init_curses()
 {
     initscr();
-    // keypad(stdscr, TRUE);
     noecho();
-    // halfdelay(-1);
-    // wtimeout(stdscr, 33);
-    // nodelay(stdscr, TRUE);
     cbreak();
 
     // start_color();
@@ -142,21 +138,16 @@ void Frontend::add_message(Message_data message)
     wattrset(win_messages, 0);
 
     waddwstr(win_messages, L": ");
-    waddwstr(win_messages, (*message.text).c_str());
+    waddwstr(win_messages, message.text.c_str());
     waddwstr(win_messages, L"\n");
 
     refresh_windows(WIN_MESSAGES);
-    // Проверить на утечку
-    // delete message.text;
 }
 
 void Frontend::add_messages(std::vector<Message_data> messages)
 {
-    for(std::vector<Message_data>::iterator it = messages.begin();
-                                                             it != messages.end(); ++it)
-    {
+    for(auto it = messages.begin(); it != messages.end(); ++it)
         add_message(*it);
-    }
 
 }
 

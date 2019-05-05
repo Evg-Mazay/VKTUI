@@ -30,7 +30,7 @@ void Backend::process_in_queue()
 
         int error;
 
-        switch (event.get_type())
+        switch (event.type)
         {
             case SEND_INPUT_MESSAGE:
             
@@ -38,19 +38,19 @@ void Backend::process_in_queue()
                     time(NULL),
                     23, 
                     24, 
-                    *event.get_data().message_data.text);
+                    event.data.message_data->text);
 
                 frontend->print_debug_message(database->last_error());
                 if (!error)
-                    frontend->add_message(event.get_data().message_data);
+                    frontend->add_message(*event.data.message_data);
 
-                delete event.get_data().message_data.text;
+                delete event.data.message_data;
                 break;
 
 
             case EDIT_INPUT_MESSAGE:
 
-                frontend->show_input_text(*event.get_data().message_pointer);
+                frontend->show_input_text(*event.data.message_pointer);
                 break;
 
 
@@ -58,7 +58,7 @@ void Backend::process_in_queue()
             case RESTORE_MESSAGES:
 
                 frontend->add_messages(database->restore_last_X_messages(
-                                                        event.get_data().messages_count));
+                                                        event.data.messages_count));
                 break;
 
 

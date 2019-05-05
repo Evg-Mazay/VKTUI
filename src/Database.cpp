@@ -4,6 +4,7 @@
 #include <codecvt>
 #include <iostream>
 #include <stdlib.h>
+#include <locale>
 
 #include "Database.h"
 
@@ -93,12 +94,15 @@ vector<Message_data> Database::restore_last_X_messages(int X)
 
     auto callback = [](void* vec, int count, char** data, char** columns) -> int
     {
-        Message_data msg;
-        msg.id = atoi(data[0]);
-        msg.time = atoi(data[1]);
-        msg.from = atoi(data[2]);
-        msg.to = atoi(data[3]);
-        msg.text = new wstring(data[4], data[4] + strlen(data[4]));
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        
+        Message_data msg{
+            atoi(data[0]),
+            atoi(data[1]),
+            atoi(data[2]),
+            atoi(data[3]),
+            converter.from_bytes(data[4])
+        };
         
         ((vector<Message_data>*)vec)->push_back(msg);
         return 0;

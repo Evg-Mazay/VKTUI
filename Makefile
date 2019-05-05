@@ -1,5 +1,6 @@
 # дефайн нужен для поддержки wchar
 COMPILER = g++ --std=c++11 -Wall -D_XOPEN_SOURCE_EXTENDED `pkg-config --cflags ncursesw`
+DEBUG = -m32 -g -fno-inline -fno-omit-frame-pointer -O0
 FLAGS = `pkg-config --libs ncursesw` `pkg-config --libs sqlite3` -lpthread
 
 # При изменении любого .h всё нужно перекомпилить (т.к. инклюды)
@@ -11,6 +12,11 @@ launch: vktui.exe
 vktui.exe: main.o Backend.o Database.o Frontend.o User_input.o Network.o \
 			Event.o Event_queue.o
 	$(COMPILER) -o vktui.exe $^ $(FLAGS)
+
+
+memorytest:
+	$(COMPILER) $(DEBUG) -o vktui_debug.exe src/*.cpp src/classes/*.cpp $(FLAGS)
+	drmemory -- vktui_debug.exe
 
 
 testfront: vktui_frontend_test.exe
@@ -46,4 +52,4 @@ frontend_test.o: src/tests/frontend_test.cpp $(HEADERS)
 
 
 clean:
-	rm -rf *.o *.exe *.log
+	rm -rfv *.o *.exe *.log *.dSYM

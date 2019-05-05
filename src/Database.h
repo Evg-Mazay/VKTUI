@@ -5,6 +5,7 @@
 #include <codecvt>
 #include <iostream>
 #include <vector>
+#include <locale>
 
 #include "classes/Event.h"
 

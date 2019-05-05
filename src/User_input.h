@@ -19,8 +19,6 @@ class User_input
     Frontend* frontend;
     Backend* backend;
 
-    Event_factory event_factory;
-
     wstring text;
 
     friend void init(Network* network, Frontend* frontend, User_input* user_input,\
