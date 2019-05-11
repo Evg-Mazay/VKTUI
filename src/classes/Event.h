@@ -14,7 +14,7 @@ struct Message_data
     int time;
     int from;
     int to;
-    const std::wstring text;
+    std::wstring text;
 };
 
 union Event_data

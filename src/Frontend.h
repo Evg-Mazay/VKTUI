@@ -6,6 +6,7 @@
 
 #include "User_input.h"
 #include "classes/Event.h"
+#include "classes/ScrollableWindow.h"
 
 #define WIN_DIALOGS 1
 #define WIN_MESSAGES 2
@@ -19,18 +20,31 @@ class Backend;
 class Database;
 class User_input;
 
+struct buffer_message_position
+{
+    int id;
+    int len;
+    unsigned long position;
+};
+
 class Frontend
 {
     Backend* backend;
     Database* database;
 
-    WINDOW* win_messages;
+    ScrollableWindow* win_messages;
     WINDOW* win_dialogs;
     WINDOW* win_input;
     WINDOW* win_debug;
 
+
+    int buf_pos = 0;
+    int cursor_pos = 0;
+
     void init_curses();
     void exit_curses();
+
+    void messages_addwstr(wstring s);
 
     friend void init(Network* network, Frontend* frontend, User_input* user_input,\
                         Backend* backend, Database* database);
@@ -39,13 +53,15 @@ public:
 
     void print_debug_message(wstring text);
     void refresh_windows(const int WIN);
-    void reset_windows(const int WIN);
     void show_input_text(wstring text);
     void clear_input();
     ~Frontend();
 
     void add_message(Message_data message);
     void add_messages(vector<Message_data> messages);
+    void edit_message(int id, std::wstring new_text);
+
+    void scroll_messages(int n);
 
     static void main_loop();
     

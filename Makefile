@@ -10,7 +10,7 @@ launch: vktui.exe
 	./vktui.exe
 
 vktui.exe: main.o Backend.o Database.o Frontend.o User_input.o Network.o \
-			Event.o Event_queue.o
+			Event.o Event_queue.o ScrollableWindow.o
 	$(COMPILER) -o vktui.exe $^ $(FLAGS)
 
 
@@ -22,7 +22,7 @@ memorytest:
 testfront: vktui_frontend_test.exe
 	./vktui_frontend_test.exe
 
-vktui_frontend_test.exe: Frontend.o User_input.o Event.o frontend_test.o
+vktui_frontend_test.exe: Frontend.o Event.o ScrollableWindow.o frontend_test.o
 	$(COMPILER) -o vktui_frontend_test.exe $^ $(FLAGS)
 
 
@@ -44,6 +44,8 @@ User_input.o: src/User_input.cpp $(HEADERS)
 Event.o: src/classes/Event.cpp $(HEADERS)
 	$(COMPILER) -c $<
 Event_queue.o: src/classes/Event_queue.cpp $(HEADERS)
+	$(COMPILER) -c $<
+ScrollableWindow.o: src/classes/ScrollableWindow.cpp $(HEADERS)
 	$(COMPILER) -c $<
 
 # тесты
