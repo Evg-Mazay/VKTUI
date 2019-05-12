@@ -13,11 +13,11 @@ ScrollableWindow::ScrollableWindow(int _lines, int _cols, int _y, int _x)
     lines = _lines;
     real_lines = _lines * 2;
 
-    depth = -lines;
+    depth = lines;
 
     pad = newpad(real_lines, cols);
 
-    // wmove(pad, lines-1, 0);
+    wmove(pad, 0, 0);
 }
 
 void ScrollableWindow::erase()
@@ -29,15 +29,15 @@ void ScrollableWindow::refresh()
 {
     if (depth % real_lines + lines < real_lines)
     {
-        prefresh(pad, depth % real_lines, 0, y, x, y + lines, x + cols);
+        prefresh(pad, depth % real_lines, 0, y, x, y + lines-1, x + cols);
     }
     else
     {
         int offset = (depth + lines) % real_lines;
 
-        prefresh(pad, depth % real_lines, 0, y, x, y + lines-offset, x + cols);
+        prefresh(pad, depth % real_lines, 0, y, x, y + lines-offset-1, x + cols);
 
-        prefresh(pad, 0, 0, y + lines-offset-iters, x, y + lines, x + cols);
+        prefresh(pad, 0, 0, y + lines-offset, x, y + lines-1, x + cols);
 
         
     }
@@ -62,9 +62,9 @@ void ScrollableWindow::print(std::wstring str)
         if ((str[i] == L'\n' &&  y == real_lines-1) ||
              x == cols-1)
         {
-            mvwadd_wch(pad, 0, 0, &c);
-            old_y = (real_lines-1) - old_y;
-            // iters++;
+            wadd_wch(pad, &c);
+            old_y %= lines;
+            wmove(pad, 0,0);
         }
         else
         {
@@ -76,7 +76,7 @@ void ScrollableWindow::print(std::wstring str)
     int old_depth = depth;
     depth += y - old_y;
 
-    // if (depth - old_depth) frontend->print_debug_message(L"depth: " + to_wstring(depth));
+    if (depth - old_depth) frontend->print_debug_message(L"depth: " + to_wstring(y));
 }
 
 void ScrollableWindow::scrll(int n)

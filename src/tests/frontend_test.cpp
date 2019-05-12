@@ -56,7 +56,7 @@ void stress_test()
 
 void add_messages_slowly()
 {
-    SEND_N_MESSAGES(65, L"Message--", 2000);
+    SEND_N_MESSAGES(65, L"Message--", 20000);
 
     // for (int i = 0; i < 100; ++i)
     // {

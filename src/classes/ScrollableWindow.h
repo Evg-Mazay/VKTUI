@@ -12,8 +12,6 @@ class ScrollableWindow
     int lines;
     int real_lines;
 
-    int iters = 0; //костыль
-
     int depth;
 
     WINDOW* pad;
