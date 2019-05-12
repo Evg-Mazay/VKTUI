@@ -24,22 +24,20 @@ Frontend* frontend;
 
 void message_edit_test()
 {
-    SEND_N_MESSAGES(10, L"loh", 0);
+    SEND_N_MESSAGES(100, L"loh", 0);
     sleep(1);
     frontend->edit_message(3, L"New text )))");
+
+    frontend->add_message(msg);
+    frontend->add_message(msg);
+    frontend->add_message(msg);
+
+    frontend->scroll_messages(-100);
 }
 
-void scroll_test()
+void add_messages_slowly()
 {
-    SEND_N_MESSAGES(80, L"MESSAGE---------------------------------------", 0)
-
-    sleep(1);
-
-    frontend->scroll_messages(-2);
-
-    sleep(1);
-
-    frontend->scroll_messages(2);
+    SEND_N_MESSAGES(1000, L"MESSAGE---------------------------------------", 1000000)
 }
 
 void stress_test()
@@ -54,13 +52,21 @@ void stress_test()
     }
 }
 
-void add_messages_slowly()
+void scroll_test()
 {
-    SEND_N_MESSAGES(65, L"Message--", 20000);
+    SEND_N_MESSAGES(365, L"Message-------------------", 20000);
 
-    // for (int i = 0; i < 100; ++i)
+    for (int i = 0; i < 310; ++i)
+    {
+        frontend->scroll_messages(-1);
+        usleep(20000);
+    }
+
+    // for (int i = 0; i < 10; ++i)
     // {
-    //     frontend->scroll_messages(-1);
+    //     msg.id = i;
+    //     msg.text = L"TEXT" + to_wstring(i);
+    //     frontend->add_message(msg);
     //     usleep(200000);
     // }
 }
@@ -83,9 +89,9 @@ int main()
 
     // auto start = clock();
 
-    // message_edit_test();
+    message_edit_test();
     // scroll_test();
-    add_messages_slowly();
+    // add_messages_slowly();
     // stress_test();
 
     // auto end = clock();

@@ -60,7 +60,8 @@ void Frontend::init_curses()
 
     win_dialogs = newwin(dialogs_h, dialogs_w, dialogs_y, dialogs_x);
     WINDOW* win_messages_dummy = newwin(messages_h, messages_w, messages_y, messages_x);
-    win_messages = new ScrollableWindow(messages_h-2, messages_w-2, messages_y+1, messages_x+1);
+    win_messages = new ScrollableWindow( messages_h >= 20 ? messages_h * 10 : 200,
+                                 messages_h-2, messages_w-2, messages_y+1, messages_x+1);
     win_input = newwin(input_h, input_w, input_y, input_x);
     win_debug = newwin(debug_h, debug_w, debug_y, debug_x);
 
@@ -96,6 +97,8 @@ void Frontend::init_curses()
     werase(win_messages_dummy);
     werase(win_input);
     werase(win_debug);
+
+    delwin(win_messages_dummy);
 
     refresh_windows(WIN_DIALOGS | WIN_MESSAGES | WIN_DEBUG | WIN_INPUT);
 }
@@ -154,7 +157,7 @@ void Frontend::scroll_messages(int n)
 
 void Frontend::edit_message(int id, wstring new_text)
 {
-    
+    win_messages->edit(new_text, id);
 }
 
 
