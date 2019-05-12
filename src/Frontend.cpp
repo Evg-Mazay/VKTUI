@@ -129,6 +129,10 @@ void Frontend::show_input_text(wstring text)
 
 void Frontend::add_message(Message_data message)
 {
+
+    last_message_depth = win_messages->print(L"✓ ");
+
+
     wattrset(win_messages->win(), WA_UNDERLINE);
     win_messages->print(to_wstring(message.from).c_str());
     wattrset(win_messages->win(), 0);
@@ -155,9 +159,9 @@ void Frontend::scroll_messages(int n)
     win_messages->refresh();
 }
 
-void Frontend::edit_message(int id, wstring new_text)
+void Frontend::edit_message(int depth, wstring new_text)
 {
-    win_messages->edit(new_text, id);
+    win_messages->edit(new_text, depth);
 }
 
 

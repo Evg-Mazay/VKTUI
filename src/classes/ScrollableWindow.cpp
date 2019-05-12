@@ -48,8 +48,12 @@ WINDOW* ScrollableWindow::win()
     return pad;
 }
 
-void ScrollableWindow::print(std::wstring str)
+long ScrollableWindow::print(std::wstring str)
 {
+    /*
+    !!!! Наверное, потребуется очищать строку, в которой будет печать
+    */
+
     int y, x;
     int old_y;
     getyx(pad, old_y, x);
@@ -73,8 +77,10 @@ void ScrollableWindow::print(std::wstring str)
     }
 
     getyx(pad, y, x);
-    int old_depth = depth;
+    long old_depth = depth;
     depth += y - old_y;
+
+    return old_depth;
 
     // if (depth - old_depth) frontend->print_debug_message(L"depth: " + to_wstring(depth));
 }
@@ -92,15 +98,18 @@ void ScrollableWindow::scrll(int n)
 }
 
 
-int ScrollableWindow::edit(std::wstring str, int depth)
+int ScrollableWindow::edit(std::wstring str, long _depth)
 {
+    // if (_depth <= )
+    //     return 1;
+
     int old_y, old_x;
     getyx(pad, old_y, old_x);
 
-    if (depth > 0)
-        wmove(pad, (depth + depth_offset) % real_lines, 0);
+    if (_depth > 0)
+        wmove(pad, (_depth + depth_offset) % real_lines, 0);
     else
-        wmove(pad, depth+lines, 0);
+        wmove(pad, _depth+lines, 0);
 
     int y, x;
     getyx(pad, y, x);
@@ -111,6 +120,8 @@ int ScrollableWindow::edit(std::wstring str, int depth)
     refresh();
 
     wmove(pad, old_y, old_x);
+
+    return 0;
 }
 
 

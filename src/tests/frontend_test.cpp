@@ -7,9 +7,10 @@
 
 #include "../Frontend.h"
 
-#define SEND_N_MESSAGES(N, TEXT, SLEEP) Message_data msg{0,1,2,3};\
+#define SEND_N_MESSAGES(N, TEXT, SLEEP)\
     for (int i = 0; i < N; ++i)\
     {\
+        Message_data msg{0,1,2,3};\
         msg.id = i;\
         msg.text = TEXT + to_wstring(i);\
         frontend->add_message(msg);\
@@ -24,15 +25,15 @@ Frontend* frontend;
 
 void message_edit_test()
 {
-    SEND_N_MESSAGES(100, L"loh", 0);
+    SEND_N_MESSAGES(1000, L"loh", 0);
     sleep(1);
-    frontend->edit_message(3, L"New text )))");
+    frontend->edit_message(995, L"New text )))");
 
-    frontend->add_message(msg);
-    frontend->add_message(msg);
-    frontend->add_message(msg);
+    // frontend->add_message(msg);
+    // frontend->add_message(msg);
+    // frontend->add_message(msg);
 
-    frontend->scroll_messages(-100);
+    // frontend->scroll_messages(-100);
 }
 
 void add_messages_slowly()

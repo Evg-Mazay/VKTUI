@@ -12,16 +12,16 @@ class ScrollableWindow
     int lines;
     int real_lines;
 
-    int depth;
+    long depth;
     int depth_offset = 0;
 
     WINDOW* pad;
 
 public:
     ScrollableWindow(int _real_lines, int _lines, int _cols, int _y, int _x);
-    
-    void print(std::wstring str);
-    int edit(std::wstring str, int depth);
+
+    long print(std::wstring str);
+    int edit(std::wstring str, long _depth);
 
     void refresh();
     void erase();

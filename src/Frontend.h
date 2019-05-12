@@ -20,13 +20,6 @@ class Backend;
 class Database;
 class User_input;
 
-struct buffer_message_position
-{
-    int id;
-    int len;
-    unsigned long position;
-};
-
 class Frontend
 {
     Backend* backend;
@@ -37,9 +30,7 @@ class Frontend
     WINDOW* win_input;
     WINDOW* win_debug;
 
-
-    int buf_pos = 0;
-    int cursor_pos = 0;
+    long last_message_depth;
 
     void init_curses();
     void exit_curses();
