@@ -6,9 +6,10 @@
 #include <condition_variable>
 #include <ctime>
 
-#include "Backend.h"
 #include "Frontend.h"
 #include "Database.h"
+#include "Backend.h"
+#include "Network.h"
 #include "classes/Event_queue.h"
 
 int Backend::main_loop()
@@ -17,6 +18,13 @@ int Backend::main_loop()
     new_event_queued.wait(lock);
 
     return process_in_queue() & process_out_queue();
+}
+
+int Backend::get_start_data()
+{
+    network->get_dialogs(&dialogs);
+    frontend->print_dialogs(dialogs, selected_dialog);
+    return 0;
 }
 
 int Backend::process_in_queue()
@@ -36,7 +44,9 @@ int Backend::process_in_queue()
 
             case SEND_INPUT_MESSAGE:
             
-                error = database->add_message(0,
+                error = database->add_message(
+                    dialogs[selected_dialog].id,
+                    0,
                     time(NULL),
                     23, 
                     24, 
@@ -60,7 +70,40 @@ int Backend::process_in_queue()
             case RESTORE_MESSAGES:
 
                 frontend->add_messages(database->restore_last_X_messages(
-                                                        event.data.messages_count));
+                            dialogs[selected_dialog].id, event.data.messages_count));
+                break;
+
+            case KEY_PRESS:
+
+                if (event.data.key == ARROW_LEFT)
+                {
+                    selected_dialog = (selected_dialog + 1) % dialogs.size();
+
+                    frontend->reset_messages();
+                    frontend->add_messages(database->restore_last_X_messages(
+                                                    dialogs[selected_dialog].id, -1));
+
+                    frontend->print_dialogs(dialogs, selected_dialog);
+                }
+                else if (event.data.key == ARROW_RIGHT)
+                {
+                    selected_dialog = (selected_dialog - 1) % dialogs.size();
+
+                    frontend->reset_messages();
+                    frontend->add_messages(database->restore_last_X_messages(
+                                                    dialogs[selected_dialog].id, -1));
+
+                    frontend->print_dialogs(dialogs, selected_dialog);
+                }
+                else if (event.data.key == ARROW_UP)
+                {
+                    frontend->scroll_messages(-2);
+                }
+                else if (event.data.key == ARROW_DOWN)
+                {
+                    frontend->scroll_messages(2);
+                }
+
                 break;
 
         }

@@ -125,5 +125,19 @@ int ScrollableWindow::edit(std::wstring str, long _depth)
 }
 
 
+void ScrollableWindow::reset()
+{
+    delwin(pad);
+
+    depth = -lines;
+    pad = newpad(real_lines, cols);
+    wmove(pad, 0, 0);
+}
+
+
+
+
+
+
 
 

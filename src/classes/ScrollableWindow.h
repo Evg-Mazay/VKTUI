@@ -25,6 +25,8 @@ public:
 
     void refresh();
     void erase();
+    void reset();
+
     WINDOW* win();
 
     void scrll(int n);

@@ -34,6 +34,7 @@ void Frontend::init_curses()
     initscr();
     noecho();
     cbreak();
+    keypad(win_input, 1);
 
     // start_color();
     // init_pair(1, COLOR_YELLOW, COLOR_GREEN);
@@ -68,7 +69,7 @@ void Frontend::init_curses()
     scrollok(win_debug, 1);
 
     attrset(WA_UNDERLINE);
-    mvaddnstr(0,0,"VKTUI v0.0 \t PRESS ESC TO EXIT", COLS);
+    mvaddnstr(0,0,"VKTUI v0.0 \t PRESS ESC THREE TIMES TO EXIT", COLS);
     attrset(0);
     refresh();
 
@@ -166,12 +167,14 @@ void Frontend::edit_message(int depth, wstring new_text)
 
 void Frontend::print_dialogs(std::vector<dialog> dialogs, int selected)
 {
+    werase(win_dialogs);
+    wmove(win_dialogs,0,0);
+
     for (int i = 0; i < dialogs.size() && i < 20; ++i)
     {
         if (i == selected)
             wattrset(win_dialogs, A_REVERSE);
 
-        waddwstr(win_dialogs, L"");
         waddwstr(win_dialogs, dialogs[i].name.c_str());
         waddwstr(win_dialogs, L"\n");
 
@@ -182,7 +185,11 @@ void Frontend::print_dialogs(std::vector<dialog> dialogs, int selected)
     wrefresh(win_dialogs);
 }
 
-
+void Frontend::reset_messages()
+{
+    win_messages->reset();
+    win_messages->refresh();
+}
 
 
 

@@ -44,13 +44,15 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
     backend->network = network;
     backend->frontend = frontend;
     backend->database = database;
+    backend->get_start_data();
 
-    database->init_database("cache.db");
+    database->init_database("cache.db", backend->dialogs);
 
     //не всегда отображает сразу. Разобраться.
     Event_data data;
     data.messages_count = -1;
     backend->queue_in_push(Event(RESTORE_MESSAGES, data));
+
 }
 
 

@@ -25,10 +25,15 @@ class Backend
     Event_queue queue_in;
     Event_queue queue_out;
 
+    std::vector<dialog> dialogs;
+    int selected_dialog = 0;
+
     friend void init(Network* network, Frontend* frontend, User_input* user_input,\
                         Backend* backend, Database* database);
     int process_in_queue();
     int process_out_queue();
+
+    int get_start_data();
 
 public:
     int main_loop();

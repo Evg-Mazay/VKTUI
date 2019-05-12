@@ -23,7 +23,7 @@ class Database
 
     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 
-    int init_database(const char* filename);
+    int init_database(const char* filename, std::vector<dialog> dialogs);
     int open_write(const char* filename);
     int open_read(const char* filename);
 
@@ -36,9 +36,10 @@ public:
     int run_write(const char* command, void* arg, int (*callback)
                                                         (void*, int, char**, char**));
     
-    std::vector<Message_data> restore_last_X_messages(int X);
+    std::vector<Message_data> restore_last_X_messages(int dialog_id, int X);
     void add_debug_message(const char* message); // сюда прикольно поставить триггер
-    int add_message(int id, long int date, int from, int to, std::wstring text);
+    int add_message(int dialog_id, int id, long int date,
+                                        int from, int to, std::wstring text);
 
     std::wstring last_error();
     std::string to_utf8(std::wstring text);

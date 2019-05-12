@@ -1,4 +1,3 @@
-// #include <stdio.h>
 #include <sqlite3.h>
 #include <string>
 #include <cstring>
@@ -6,8 +5,10 @@
 #include <iostream>
 #include <stdlib.h>
 #include <locale>
+#include <vector>
 
 #include "Database.h"
+#include "classes/Event.h"
 
 using namespace std;
 
@@ -44,19 +45,24 @@ int Database::run_write(const char* command, void* arg, int (*callback)
 }
 
 
-int Database::init_database(const char* filename)
+int Database::init_database(const char* filename, std::vector<dialog> dialogs)
 {
     open_write(filename);
     run_write("CREATE TABLE debug_messages (\
                     ID INTEGER PRIMARY KEY AUTOINCREMENT,\
                     message TEXT);", NULL, NULL);
 
-    run_write("CREATE TABLE messages (\
+    for (int i = 0; i < dialogs.size(); ++i)
+    {
+        auto str = string("CREATE TABLE messages" + to_string(dialogs[i].id) + " (\
                     'id' INTEGER,\
                     'date' DATE,\
                     'from' INTEGER,\
                     'to' INTEGER,\
-                    'text' TEXT);", NULL, NULL);
+                    'text' TEXT);");
+        run_write(str.c_str(), NULL, NULL);
+    }
+    
 
     open_read(filename);
 
@@ -73,10 +79,11 @@ void Database::add_debug_message(const char* message)
     run_write(str.c_str(), NULL, NULL);
 }
 
-int Database::add_message(int id, long int date, int from, int to, wstring text)
+int Database::add_message(int dialog_id, int id, long int date, 
+                                        int from, int to, wstring text)
 {
     // НЕ ПОДДЕРЖИВАЕТ КАВЫЧКИ В ТЕКСТЕ
-    string str("INSERT INTO messages VALUES (" +
+    string str("INSERT INTO messages" + to_string(dialog_id) + " VALUES (" +
         to_string(id)           + "," +
         to_string(date)         + "," +
         to_string(from)         + "," +
@@ -86,10 +93,10 @@ int Database::add_message(int id, long int date, int from, int to, wstring text)
     return run_write(str.c_str(), NULL, NULL);
 }
 
-vector<Message_data> Database::restore_last_X_messages(int X)
+vector<Message_data> Database::restore_last_X_messages(int dialog_id, int X)
 {
-    string str("SELECT [id], [date], [from], [to], [text] FROM messages\
-                ORDER BY date LIMIT " + to_string(X) + ";");
+    string str("SELECT [id], [date], [from], [to], [text] FROM \
+        messages" + to_string(dialog_id) + " ORDER BY date LIMIT " + to_string(X) + ";");
 
     vector<Message_data> vec;
 

@@ -9,14 +9,19 @@
 
 using namespace std;
 
+#define ARROW_LEFT  0
+#define ARROW_UP    1
+#define ARROW_RIGHT 2
+#define ARROW_DOWN  3
+
 class Network;
 class Database;
 
 class User_input
 {
-    enum {ESCAPE, TEST};
+    // enum {ESCAPE, TEST};
 
-    Frontend* frontend;
+    Frontend* frontend; // frontend тут использовать только для дебага! (нет мьютексов).
     Backend* backend;
 
     wstring text;

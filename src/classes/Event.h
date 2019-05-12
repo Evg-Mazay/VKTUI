@@ -7,6 +7,13 @@
 #define SEND_INPUT_MESSAGE  1
 #define RESTORE_MESSAGES    2
 #define EXIT                3
+#define KEY_PRESS           4
+
+struct dialog
+{
+    int id;
+    std::wstring name;
+};
 
 struct Message_data
 {
@@ -22,6 +29,7 @@ union Event_data
     std::wstring* message_pointer;
     int messages_count;
     Message_data* message_data;
+    int key;
 };
 
 struct Event

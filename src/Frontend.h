@@ -21,14 +21,6 @@ class Database;
 class User_input;
 
 
-
-struct dialog
-{
-    int id;
-    std::wstring name;
-};
-
-
 class Frontend
 {
     Backend* backend;
@@ -60,6 +52,8 @@ public:
     void add_message(Message_data message);
     void add_messages(vector<Message_data> messages);
     void edit_message(int id, std::wstring new_text);
+
+    void reset_messages();
 
     void print_dialogs(std::vector<dialog> dialogs, int selected);
 
