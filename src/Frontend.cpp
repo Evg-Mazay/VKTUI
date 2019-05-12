@@ -53,10 +53,10 @@ void Frontend::init_curses()
     int input_x = COLS * 0.6;
     int input_y = LINES * 0.8 + 1;
 
-    int debug_h = LINES * 0.8;//LINES * 0.2;
-    int debug_w = COLS * 0.4;//COLS * 0.6;
+    int debug_h = LINES * 0.2;
+    int debug_w = COLS * 0.6;
     int debug_x = 0;
-    int debug_y = 1;//LINES * 0.8 + 1;
+    int debug_y = LINES * 0.8 + 1;
 
     win_dialogs = newwin(dialogs_h, dialogs_w, dialogs_y, dialogs_x);
     WINDOW* win_messages_dummy = newwin(messages_h, messages_w, messages_y, messages_x);
@@ -163,6 +163,30 @@ void Frontend::edit_message(int depth, wstring new_text)
 {
     win_messages->edit(new_text, depth);
 }
+
+void Frontend::print_dialogs(std::vector<dialog> dialogs, int selected)
+{
+    for (int i = 0; i < dialogs.size() && i < 20; ++i)
+    {
+        if (i == selected)
+            wattrset(win_dialogs, A_REVERSE);
+
+        waddwstr(win_dialogs, L"");
+        waddwstr(win_dialogs, dialogs[i].name.c_str());
+        waddwstr(win_dialogs, L"\n");
+
+        if (i == selected)
+            wattrset(win_dialogs, 0);
+    }
+
+    wrefresh(win_dialogs);
+}
+
+
+
+
+
+
 
 
 

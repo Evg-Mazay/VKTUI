@@ -72,6 +72,17 @@ void scroll_test()
     // }
 }
 
+void dialog_test()
+{
+    std::vector<dialog> v;
+    v.push_back((dialog){1, wstring(L"Антон")});
+    v.push_back((dialog){2, wstring(L"Не Антон")});
+    v.push_back((dialog){3, wstring(L"Тоже не Антон")});
+    v.push_back((dialog){4, wstring(L"Совсем не Антон")});
+
+    frontend->print_dialogs(v, 0);
+}
+
 
 //-------------------------------------------
 
@@ -90,7 +101,8 @@ int main()
 
     // auto start = clock();
 
-    message_edit_test();
+    dialog_test();
+    // message_edit_test();
     // scroll_test();
     // add_messages_slowly();
     // stress_test();
