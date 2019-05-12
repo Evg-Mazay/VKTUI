@@ -53,10 +53,10 @@ void Frontend::init_curses()
     int input_x = COLS * 0.6;
     int input_y = LINES * 0.8 + 1;
 
-    int debug_h = LINES * 0.2;
-    int debug_w = COLS * 0.6;
+    int debug_h = LINES * 0.8;//LINES * 0.2;
+    int debug_w = COLS * 0.4;//COLS * 0.6;
     int debug_x = 0;
-    int debug_y = LINES * 0.8 + 1;
+    int debug_y = 1;//LINES * 0.8 + 1;
 
     win_dialogs = newwin(dialogs_h, dialogs_w, dialogs_y, dialogs_x);
     WINDOW* win_messages_dummy = newwin(messages_h, messages_w, messages_y, messages_x);
@@ -126,16 +126,13 @@ void Frontend::show_input_text(wstring text)
 
 void Frontend::add_message(Message_data message)
 {
-    // out_screen_buffer += message.text;
-    // out_screen_messages.push_back(buffer_message_position{0,1,out_screen_buffer.length()});
-
     wattrset(win_messages->win(), WA_UNDERLINE);
-    waddwstr(win_messages->win(), to_wstring(message.from).c_str());
+    win_messages->print(to_wstring(message.from).c_str());
     wattrset(win_messages->win(), 0);
 
-    waddwstr(win_messages->win(), L": ");
-    waddwstr(win_messages->win(), message.text.c_str());
-    waddwstr(win_messages->win(), L"\n");
+    win_messages->print(L": ");
+    win_messages->print(message.text.c_str());
+    win_messages->print(L"\n");
 
     win_messages->refresh();
 
