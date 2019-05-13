@@ -64,7 +64,7 @@ long ScrollableWindow::print(std::wstring str)
 
         getyx(pad, y, x);
         if ((str[i] == L'\n' &&  y == real_lines-1) ||
-             (y == real_lines-1 && x == cols-1))
+             (y == real_lines-1 && x == cols))
         {
             wadd_wch(pad, &c);
             old_y = y - old_y-1;
