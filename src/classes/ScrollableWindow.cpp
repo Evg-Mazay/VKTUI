@@ -85,12 +85,14 @@ void ScrollableWindow::scrll(int n)
 {
     if (depth_offset + n >= 0)
         depth_offset = 0;
+    else if (depth + depth_offset + n < -1)
+        return;
     else if (depth_offset + n <= -real_lines + lines)
         depth_offset = -real_lines + lines;
     else
         depth_offset += n;
 
-    // frontend->print_debug_message(L"depth: " + to_wstring(depth_offset));
+    // frontend->print_debug_message(L"depth: " + to_wstring(depth) + L" " + to_wstring(depth_offset));
 }
 
 

@@ -37,6 +37,8 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
 {
     setlocale(LC_ALL, "");
 
+    database->init_database("cache.db", backend->dialogs);
+
     network->backend = backend;
 
     frontend->backend = backend;
@@ -49,11 +51,6 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
     backend->frontend = frontend;
     backend->database = database;
     backend->get_start_data();
-
-    database->init_database("cache.db", backend->dialogs);
-
-    //не всегда отображает сразу. Разобраться.
-    backend->queue_push(Event(RESTORE_MESSAGES, -1));
 }
 
 // initialization and threading
@@ -68,8 +65,8 @@ int main(void)
     init(&network, &frontend, &user_input, &backend, &database);
 
     thread input_thread(input_thread_main, &user_input);
-    thread network_thread(network_thread_main, &network);
     thread backend_thread(backend_thread_main, &backend);
+    thread network_thread(network_thread_main, &network);
 
     input_thread.join();
     network_thread.join();

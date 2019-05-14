@@ -10,7 +10,7 @@
 #define SEND_N_MESSAGES(N, TEXT, SLEEP)\
     for (int i = 0; i < N; ++i)\
     {\
-        Message_data msg{0,1,2,3};\
+        Message_data msg{0,1,2};\
         msg.id = i;\
         msg.text = TEXT + to_wstring(i);\
         frontend->add_message(msg);\
@@ -43,7 +43,7 @@ void add_messages_slowly()
 
 void stress_test()
 {
-    Message_data msg{0,1,2,3};
+    Message_data msg{0,1,2};
     for (int i = 1; i < 50000; ++i)
     {
         msg.text = L"Message------------------------------- " + to_wstring(i);
@@ -55,12 +55,12 @@ void stress_test()
 
 void scroll_test()
 {
-    SEND_N_MESSAGES(365, L"Message-------------------", 20000);
+    SEND_N_MESSAGES(35, L"Message-------------------", 20000);
 
-    for (int i = 0; i < 310; ++i)
+    for (int i = 0; i < 37; ++i)
     {
         frontend->scroll_messages(-1);
-        usleep(20000);
+        usleep(200000);
     }
 
     // for (int i = 0; i < 10; ++i)
@@ -103,9 +103,9 @@ int main()
 
     // dialog_test();
     // message_edit_test();
-    // scroll_test();
+    scroll_test();
     // add_messages_slowly();
-    stress_test();
+    // stress_test();
 
     // auto end = clock();
 

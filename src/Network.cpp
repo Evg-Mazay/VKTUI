@@ -1,12 +1,21 @@
 #include <vector>
 #include <string>
+#include <ctime>
 
 #include "Network.h"
 #include "Data_types.h"
 
 int Network::main_loop()
 {
-    return 0;
+    Message_data msg {
+        0,          // message id
+        time(NULL), // time
+        255,        // sender id
+        L"Привет"   // text
+    };
+
+    backend->queue_push(Event(RECIEVED_MESSAGE, msg));
+    return 0; // сразу выйти
 }
 
 int Network::get_dialogs(std::vector<dialog>* dialogs)
@@ -19,3 +28,9 @@ int Network::get_dialogs(std::vector<dialog>* dialogs)
     return 0;
 }
 
+
+int Network::send_message(Message_data msg)
+{
+
+    return 0;
+}

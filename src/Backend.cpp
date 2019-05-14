@@ -33,6 +33,10 @@ int Backend::get_start_data()
 {
     network->get_dialogs(&dialogs);
     frontend->print_dialogs(dialogs, selected_dialog);
+
+    queue_push(Event(RESTORE_MESSAGES, -1));
+    process_queue();
+
     return 0;
 }
 
@@ -80,9 +84,15 @@ int Backend::process_queue()
             if (!error)
                 frontend->add_message(msg);
         }
+        else if (event.type == RECIEVED_MESSAGE)
+        {
+            database->add_message(dialogs[selected_dialog].id, *event.data.message_p);
+            frontend->add_message(*event.data.message_p);
+            delete event.data.message_p;
+        }
         else if (event.type == EDIT_INPUT_MESSAGE)
         {
-            frontend->show_input_text(*event.data.text_p);
+            frontend->show_input_text(*event.data.no_free_text_p);
         }
         else if (event.type == RESTORE_MESSAGES)
         {

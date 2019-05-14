@@ -45,7 +45,7 @@ int User_input::main_loop()
             else
                 continue;
 
-            backend->queue_push(Event(4, key_data));
+            backend->queue_push(Event(KEY_PRESS, key_data));
 
 
             // frontend->print_debug_message(wstring(esc));

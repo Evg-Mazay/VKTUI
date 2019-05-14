@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Data_types.h"
+#include "Backend.h"
 
 class Frontend;
 class Backend;
@@ -20,6 +21,8 @@ class Network
 public:
     int main_loop();
     int get_dialogs(std::vector<dialog>* dialogs);
+
+    int send_message(Message_data msg);
     
 };
 
