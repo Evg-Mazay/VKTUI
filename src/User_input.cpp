@@ -2,8 +2,9 @@
 #include <string>
 
 #include "User_input.h"
-#include "classes/Event.h"
+#include "Data_types.h"
 #include "Backend.h"
+
 
 // return 0 - выход из программы
 // return 1 - продолжить
@@ -14,8 +15,7 @@ int User_input::main_loop()
 
     while (ch != 13) // ENTER
     {
-        Event_data data{&text};
-        backend->queue_in_push(Event(EDIT_INPUT_MESSAGE, data));
+        backend->queue_push(Event(EDIT_INPUT_MESSAGE, &text));
 
         ch = getwc(stdin);
 
@@ -35,24 +35,24 @@ int User_input::main_loop()
 
             Event_data key_data;
             if (esc[1] == L'D')
-                key_data.key = ARROW_LEFT;
+                key_data.integer = ARROW_LEFT;
             else if (esc[1] == L'A')
-                key_data.key = ARROW_UP;
+                key_data.integer = ARROW_UP;
             else if (esc[1] == L'C')
-                key_data.key = ARROW_RIGHT;
+                key_data.integer = ARROW_RIGHT;
             else if (esc[1] == L'B')
-                key_data.key = ARROW_DOWN;
+                key_data.integer = ARROW_DOWN;
             else
                 continue;
 
-            backend->queue_in_push(Event(4, key_data));
+            backend->queue_push(Event(4, key_data));
 
 
             // frontend->print_debug_message(wstring(esc));
 
             if (esc[0] == 27 && esc[1] == 27)
             {
-                backend->queue_in_push(Event(EXIT));
+                backend->queue_push(Event(EXIT));
                 return 0;
             }
 
@@ -73,9 +73,7 @@ int User_input::main_loop()
     if (text.empty())
         return 1;
 
-    Event_data data;
-    data.message_data = new Message_data{0,1,23,3,wstring(text)};
-    backend->queue_in_push(Event(SEND_INPUT_MESSAGE, data));
+    backend->queue_push(Event(SEND_INPUT_MESSAGE, text));
 
     return 1;
 }

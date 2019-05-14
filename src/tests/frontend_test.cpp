@@ -46,7 +46,7 @@ void stress_test()
     Message_data msg{0,1,2,3};
     for (int i = 1; i < 50000; ++i)
     {
-        msg.text = L"Message-------------------------------- " + to_wstring(i);
+        msg.text = L"Message------------------------------- " + to_wstring(i);
         frontend->add_message(msg);
         frontend->print_debug_message(msg.text);
         frontend->show_input_text(msg.text);
@@ -101,11 +101,11 @@ int main()
 
     // auto start = clock();
 
-    dialog_test();
+    // dialog_test();
     // message_edit_test();
     // scroll_test();
     // add_messages_slowly();
-    // stress_test();
+    stress_test();
 
     // auto end = clock();
 

@@ -1,7 +1,6 @@
 #include <mutex>
 
 #include "Event_queue.h"
-#include "Event.h"
 
 int Event_queue::empty()
 {

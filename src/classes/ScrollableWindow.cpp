@@ -31,7 +31,7 @@ void ScrollableWindow::refresh()
     {
         prefresh(pad, (depth + depth_offset) % real_lines, 0, y, x, y + lines-1, x + cols);
     }
-    else
+    else // here we actually draw two windows
     {
         int offset = ((depth + depth_offset) + lines) % real_lines;
 
@@ -43,15 +43,11 @@ void ScrollableWindow::refresh()
     }
 }
 
-WINDOW* ScrollableWindow::win()
-{
-    return pad;
-}
-
 long ScrollableWindow::print(std::wstring str)
 {
     /*
     !!!! Наверное, потребуется очищать строку, в которой будет печать
+            (Но это не точно)
     */
 
     int y, x;
@@ -133,6 +129,21 @@ void ScrollableWindow::reset()
     pad = newpad(real_lines, cols);
     wmove(pad, 0, 0);
 }
+
+void ScrollableWindow::del()
+{
+    delwin(pad);
+}
+
+void ScrollableWindow::attr(unsigned long attr)
+{
+    wattrset(pad, attr);
+}
+
+
+
+
+
 
 
 

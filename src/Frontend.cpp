@@ -7,23 +7,6 @@
 #include "User_input.h"
 #include "Frontend.h"
 
-
-void Frontend::refresh_windows(const int WIN)
-{
-    if (WIN & WIN_DIALOGS)
-        wrefresh(win_dialogs);
-
-    if (WIN & WIN_MESSAGES)
-        win_messages->refresh();
-
-    if (WIN & WIN_INPUT)
-        wrefresh(win_input);
-
-    if (WIN & WIN_DEBUG)
-        wrefresh(win_debug);
-}
-
-
 Frontend::~Frontend()
 {
     exit_curses();
@@ -83,7 +66,9 @@ void Frontend::init_curses()
     mvwprintw(win_debug, 0, 0, "Debug");
 
     wrefresh(win_messages_dummy);
-    refresh_windows(WIN_DIALOGS | WIN_MESSAGES | WIN_DEBUG | WIN_INPUT);
+    wrefresh(win_dialogs);
+    wrefresh(win_input);
+    wrefresh(win_debug);
 
     wresize(win_dialogs, dialogs_h - 2, dialogs_w - 2);
     wresize(win_messages_dummy, messages_h - 2, messages_w - 2);
@@ -101,13 +86,16 @@ void Frontend::init_curses()
 
     delwin(win_messages_dummy);
 
-    refresh_windows(WIN_DIALOGS | WIN_MESSAGES | WIN_DEBUG | WIN_INPUT);
+    win_messages->refresh();
+    wrefresh(win_dialogs);
+    wrefresh(win_input);
+    wrefresh(win_debug);
 }
 
 void Frontend::exit_curses()
 {
     delwin(win_dialogs);
-    delwin(win_messages->win());
+    win_messages->del();
     delwin(win_input);
     delwin(win_debug);
     endwin();
@@ -117,26 +105,25 @@ void Frontend::print_debug_message(wstring text)
 {
     text += L"\n";
     waddwstr(win_debug, text.c_str());
-    refresh_windows(WIN_DEBUG);
+    wrefresh(win_debug);
 }
 
 void Frontend::show_input_text(wstring text)
 {
     werase(win_input);
     waddwstr(win_input, text.c_str());
-    refresh_windows(WIN_INPUT);
+    wrefresh(win_input);
 }
 
 
 void Frontend::add_message(Message_data message)
 {
 
-    last_message_depth = win_messages->print(L"✓ ");
+    win_messages->print(L"✓ ");
 
-
-    wattrset(win_messages->win(), WA_UNDERLINE);
-    win_messages->print(to_wstring(message.from).c_str());
-    wattrset(win_messages->win(), 0);
+    win_messages->attr(WA_UNDERLINE);
+    win_messages->print(to_wstring(message.person).c_str());
+    win_messages->attr(0);
 
     win_messages->print(L": ");
     win_messages->print(message.text.c_str());

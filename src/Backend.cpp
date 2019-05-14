@@ -6,10 +6,12 @@
 #include <condition_variable>
 #include <ctime>
 
+#include "User_input.h"
 #include "Frontend.h"
 #include "Database.h"
 #include "Backend.h"
 #include "Network.h"
+#include "Data_types.h"
 #include "classes/Event_queue.h"
 
 int Backend::main_loop()
@@ -17,7 +19,13 @@ int Backend::main_loop()
     std::unique_lock<std::mutex> lock(backend_main_mutex);
     new_event_queued.wait(lock);
 
-    return process_in_queue() & process_out_queue();
+    return process_queue();
+}
+
+void Backend::queue_push(Event event)
+{
+    queue.push(event);
+    new_event_queued.notify_one();
 }
 
 int Backend::get_start_data()
@@ -27,106 +35,78 @@ int Backend::get_start_data()
     return 0;
 }
 
-int Backend::process_in_queue()
+int Backend::process_queue()
 {
-    while (!queue_in.empty())
+    while (!queue.empty())
     {
-        Event event = queue_in.pop();
+        Event event = queue.pop();
 
-        int error;
-
-        switch (event.type)
+        if (event.type == EXIT)
         {
-            case EXIT:
+            return 0;
+        }
+        else if (event.type == SEND_INPUT_MESSAGE)
+        {
+            Message_data msg = {
+                0, 
+                time(NULL), 
+                dialogs[selected_dialog].id,
+                *event.data.text_p
+            };
 
-                return 0;
+            delete event.data.text_p;
 
+            int error = database->add_message(dialogs[selected_dialog].id, msg);
 
-            case SEND_INPUT_MESSAGE:
-            
-                error = database->add_message(
-                    dialogs[selected_dialog].id,
-                    0,
-                    time(NULL),
-                    23, 
-                    24, 
-                    event.data.message_data->text);
+            frontend->print_debug_message(database->last_error());
+            if (!error)
+                frontend->add_message(msg);
+        }
+        else if (event.type == EDIT_INPUT_MESSAGE)
+        {
+            frontend->show_input_text(*event.data.text_p);
+        }
+        else if (event.type == RESTORE_MESSAGES)
+        {
+            frontend->add_messages(database->restore_last_n_messages(
+                        dialogs[selected_dialog].id, event.data.integer));
+        }
+        else if (event.type == KEY_PRESS)
+        {
+            if (event.data.integer == ARROW_LEFT)
+            {
+                selected_dialog = (selected_dialog + 1) % dialogs.size();
 
-                frontend->print_debug_message(database->last_error());
-                if (!error)
-                    frontend->add_message(*event.data.message_data);
+                frontend->reset_messages();
+                frontend->add_messages(database->restore_last_n_messages(
+                                                dialogs[selected_dialog].id, -1));
 
-                delete event.data.message_data;
-                break;
+                frontend->print_dialogs(dialogs, selected_dialog);
+            }
+            else if (event.data.integer == ARROW_RIGHT)
+            {
+                selected_dialog = (selected_dialog - 1) % dialogs.size();
 
+                frontend->reset_messages();
+                frontend->add_messages(database->restore_last_n_messages(
+                                                dialogs[selected_dialog].id, -1));
 
-            case EDIT_INPUT_MESSAGE:
-
-                frontend->show_input_text(*event.data.message_pointer);
-                break;
-
-
-
-            case RESTORE_MESSAGES:
-
-                frontend->add_messages(database->restore_last_X_messages(
-                            dialogs[selected_dialog].id, event.data.messages_count));
-                break;
-
-            case KEY_PRESS:
-
-                if (event.data.key == ARROW_LEFT)
-                {
-                    selected_dialog = (selected_dialog + 1) % dialogs.size();
-
-                    frontend->reset_messages();
-                    frontend->add_messages(database->restore_last_X_messages(
-                                                    dialogs[selected_dialog].id, -1));
-
-                    frontend->print_dialogs(dialogs, selected_dialog);
-                }
-                else if (event.data.key == ARROW_RIGHT)
-                {
-                    selected_dialog = (selected_dialog - 1) % dialogs.size();
-
-                    frontend->reset_messages();
-                    frontend->add_messages(database->restore_last_X_messages(
-                                                    dialogs[selected_dialog].id, -1));
-
-                    frontend->print_dialogs(dialogs, selected_dialog);
-                }
-                else if (event.data.key == ARROW_UP)
-                {
-                    frontend->scroll_messages(-2);
-                }
-                else if (event.data.key == ARROW_DOWN)
-                {
-                    frontend->scroll_messages(2);
-                }
-
-                break;
-
+                frontend->print_dialogs(dialogs, selected_dialog);
+            }
+            else if (event.data.integer == ARROW_UP)
+            {
+                frontend->scroll_messages(-2);
+            }
+            else if (event.data.integer == ARROW_DOWN)
+            {
+                frontend->scroll_messages(2);
+            }
         }
     }
 
     return 1;
 }
 
-int Backend::process_out_queue()
-{
-    return 1;
-}
-
-void Backend::queue_in_push(Event event)
-{
-    queue_in.push(event);
-    new_event_queued.notify_one();
-}
-void Backend::queue_out_push(Event event)
-{
-    queue_out.push(event);
-    new_event_queued.notify_one();
-}
 
 
 

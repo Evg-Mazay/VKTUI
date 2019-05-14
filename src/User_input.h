@@ -5,7 +5,7 @@
 
 #include "Frontend.h"
 #include "Backend.h"
-#include "classes/Event.h"
+#include "Data_types.h"
 
 using namespace std;
 
@@ -13,6 +13,16 @@ using namespace std;
 #define ARROW_UP    1
 #define ARROW_RIGHT 2
 #define ARROW_DOWN  3
+
+/*
+This class is responsible for read keyboard keys
+
+User_input --> Backend.queue: Events like "key pressed"
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! Тут бардак, надо переписывать !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+*/
 
 class Network;
 class Database;

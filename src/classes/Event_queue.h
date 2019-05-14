@@ -4,7 +4,16 @@
 #include <mutex>
 #include <vector>
 
-#include "Event.h"
+#include "../Data_types.h"
+
+/*
+This is the queue with mutex - a part of backend.
+
+Backend.queue <-- Network: Events
+Backend.queue <-- User_input: Events
+
+*/
+
 
 class Event_queue
 {

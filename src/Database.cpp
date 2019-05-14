@@ -1,14 +1,7 @@
-#include <sqlite3.h>
-#include <string>
-#include <cstring>
-#include <codecvt>
-#include <iostream>
-#include <stdlib.h>
-#include <locale>
-#include <vector>
+
 
 #include "Database.h"
-#include "classes/Event.h"
+#include "Data_types.h"
 
 using namespace std;
 
@@ -57,8 +50,7 @@ int Database::init_database(const char* filename, std::vector<dialog> dialogs)
         auto str = string("CREATE TABLE messages" + to_string(dialogs[i].id) + " (\
                     'id' INTEGER,\
                     'date' DATE,\
-                    'from' INTEGER,\
-                    'to' INTEGER,\
+                    'person' INTEGER,\
                     'text' TEXT);");
         run_write(str.c_str(), NULL, NULL);
     }
@@ -80,23 +72,22 @@ void Database::add_debug_message(const char* message)
 }
 
 int Database::add_message(int dialog_id, int id, long int date, 
-                                        int from, int to, wstring text)
+                                        int person, wstring text)
 {
     // НЕ ПОДДЕРЖИВАЕТ КАВЫЧКИ В ТЕКСТЕ
     string str("INSERT INTO messages" + to_string(dialog_id) + " VALUES (" +
         to_string(id)           + "," +
         to_string(date)         + "," +
-        to_string(from)         + "," +
-        to_string(to)           + "," +
+        to_string(person)       + "," +
         "'" + to_utf8(text) + "'" + ");");
 
     return run_write(str.c_str(), NULL, NULL);
 }
 
-vector<Message_data> Database::restore_last_X_messages(int dialog_id, int X)
+vector<Message_data> Database::restore_last_n_messages(int dialog_id, int n)
 {
-    string str("SELECT [id], [date], [from], [to], [text] FROM \
-        messages" + to_string(dialog_id) + " ORDER BY date LIMIT " + to_string(X) + ";");
+    string str("SELECT [id], [date], [person], [text] FROM \
+        messages" + to_string(dialog_id) + " ORDER BY date LIMIT " + to_string(n) + ";");
 
     vector<Message_data> vec;
 
@@ -108,8 +99,7 @@ vector<Message_data> Database::restore_last_X_messages(int dialog_id, int X)
             atoi(data[0]),
             atoi(data[1]),
             atoi(data[2]),
-            atoi(data[3]),
-            converter.from_bytes(data[4])
+            converter.from_bytes(data[3])
         };
         
         ((vector<Message_data>*)vec)->push_back(msg);
@@ -135,6 +125,12 @@ wstring Database::last_error()
     else
         return wstring(L"OK");
 }
+
+int Database::add_message(int dialog_id, Message_data msg)
+{
+    return add_message(dialog_id, msg.id, msg.time, msg.person, msg.text);
+}
+
 
 
 

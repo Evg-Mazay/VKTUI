@@ -4,29 +4,34 @@
 #include <unistd.h>
 #include <locale.h>
 
+#include "User_input.h"
 #include "Network.h"
 #include "Frontend.h"
 #include "Backend.h"
 #include "Database.h"
-#include "classes/Event.h"
+#include "Data_types.h"
 
 using namespace std;
 
+// longpoll thread
 void network_thread_main(Network* network)
 {
     while (network->main_loop());
 }
 
+// keyboard-blockable thread
 void input_thread_main(User_input* user_input)
 {
     while (user_input->main_loop());
 }
 
+// main thread
 void backend_thread_main(Backend* backend)
 {
     while (backend->main_loop());
 }
 
+// prepares program for ready-to run state
 void init(Network* network, Frontend* frontend, User_input* user_input,\
                         Backend* backend, Database* database)
 {
@@ -35,7 +40,6 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
     network->backend = backend;
 
     frontend->backend = backend;
-    frontend->database = database;
     frontend->init_curses();
 
     user_input->frontend = frontend;
@@ -49,13 +53,10 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
     database->init_database("cache.db", backend->dialogs);
 
     //не всегда отображает сразу. Разобраться.
-    Event_data data;
-    data.messages_count = -1;
-    backend->queue_in_push(Event(RESTORE_MESSAGES, data));
-
+    backend->queue_push(Event(RESTORE_MESSAGES, -1));
 }
 
-
+// initialization and threading
 int main(void)
 {
     Network network;
