@@ -69,6 +69,12 @@ public:
     
     // add new event into queue (releases condition variable)
     void queue_push(Event event);
+
+    // debug_print
+    #define DEBUG_PRINT_DISPLAY     1
+    #define DEBUG_PRINT_DATABASE    2
+    #define DEBUG_PRINT_LOG         4
+    void debug_print(std::wstring text, int mode);
 };
 
 

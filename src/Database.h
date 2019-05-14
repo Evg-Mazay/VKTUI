@@ -53,7 +53,7 @@ public:
     std::vector<Message_data> restore_last_n_messages(int dialog_id, int n);
 
     // add message into debug table
-    void add_debug_message(const char* message); // сюда прикольно поставить триггер
+    void add_debug_message(std::wstring message); // сюда прикольно поставить триггер
 
     // add message into dialog
     int add_message(int dialog_id, int id, long int date,

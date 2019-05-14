@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <string>
-#include <stdio.h>
+#include <iostream>
+#include <fstream>
 #include <vector>
 #include <mutex>
 #include <condition_variable>
@@ -33,6 +34,23 @@ int Backend::get_start_data()
     network->get_dialogs(&dialogs);
     frontend->print_dialogs(dialogs, selected_dialog);
     return 0;
+}
+
+void Backend::debug_print(std::wstring text, int mode)
+{
+    if (mode & DEBUG_PRINT_DISPLAY)
+        frontend->print_debug_message(text);
+
+    if (mode & DEBUG_PRINT_DATABASE)
+        database->add_debug_message(text);
+
+    if (mode & DEBUG_PRINT_LOG)
+    {
+        wofstream myfile("log.log", std::fstream::out | std::fstream::app);
+        myfile.imbue(locale(""));
+        myfile << text << L"\n";
+        myfile.close();
+    }
 }
 
 int Backend::process_queue()

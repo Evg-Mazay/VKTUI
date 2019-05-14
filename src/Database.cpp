@@ -61,12 +61,9 @@ int Database::init_database(const char* filename, std::vector<dialog> dialogs)
     return 0;
 }
 
-void Database::add_debug_message(const char* message)
+void Database::add_debug_message(wstring message)
 {
-    string str("INSERT INTO debug_messages(message)");
-    str.append("VALUES ('");
-    str.append(message);
-    str.append("');");
+    string str("INSERT INTO debug_messages(message) VALUES ('" + to_utf8(message) + "');");
 
     run_write(str.c_str(), NULL, NULL);
 }
