@@ -34,9 +34,6 @@ int Backend::get_start_data()
     network->get_dialogs(&dialogs);
     frontend->print_dialogs(dialogs, selected_dialog);
 
-    queue_push(Event(RESTORE_MESSAGES, -1));
-    process_queue();
-
     return 0;
 }
 

@@ -14,6 +14,11 @@
     Here is data types to use in program
 */
 
+struct credentials
+{
+    int id;
+    std::string token;
+};
 
 struct dialog
 {

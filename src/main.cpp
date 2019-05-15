@@ -37,20 +37,24 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
 {
     setlocale(LC_ALL, "");
 
-    database->init_database("cache.db", backend->dialogs);
-
-    network->backend = backend;
-
     frontend->backend = backend;
     frontend->init_curses();
 
-    user_input->frontend = frontend;
     user_input->backend = backend;
 
     backend->network = network;
     backend->frontend = frontend;
     backend->database = database;
     backend->get_start_data();
+
+    database->init_database("cache.db", backend->dialogs);
+
+    network->backend = backend;
+    network->set_credentials(database->get_credentials());
+
+    backend->queue_push(Event(RESTORE_MESSAGES, -1));
+    backend->process_queue();
+
 }
 
 // initialization and threading

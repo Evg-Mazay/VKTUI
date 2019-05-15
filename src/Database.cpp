@@ -54,6 +54,17 @@ int Database::init_database(const char* filename, std::vector<dialog> dialogs)
                     'text' TEXT);");
         run_write(str.c_str(), NULL, NULL);
     }
+
+
+    run_write("CREATE TABLE credentials (\
+                    USER_ID INTEGER,\
+                    token TEXT);", NULL, NULL);
+
+    run_write("CREATE TRIGGER only_one BEFORE INSERT ON credentials\
+                BEGIN\
+                DELETE FROM credentials WHERE rowid IN\
+                                (SELECT rowid FROM credentials LIMIT 1);\
+                END;", NULL, NULL);
     
 
     open_read(filename);
@@ -106,6 +117,26 @@ vector<Message_data> Database::restore_last_n_messages(int dialog_id, int n)
     run_read(str.c_str(), (void *) &vec, callback);
     
     return vec;
+}
+
+credentials Database::get_credentials()
+{
+    credentials result = {0};
+
+    auto callback = [](void* result, int count, char** data, char** columns) -> int
+    {
+        credentials* cred = (credentials*) result;
+
+        cred->id = atoi(data[0]);
+        cred->token = data[1];
+
+        return 0;
+    };
+
+    run_read("SELECT [USER_ID], [token] FROM credentials;", 
+                                                    (void *) &result, callback);
+
+    return result;
 }
 
 

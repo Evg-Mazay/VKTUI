@@ -63,6 +63,9 @@ public:
     // get last error message
     std::wstring last_error();
 
+    // return user_id and token
+    credentials get_credentials();
+
     // convert wstring to utf8
     std::string to_utf8(std::wstring text);
 

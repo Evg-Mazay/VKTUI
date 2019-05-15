@@ -1,7 +1,7 @@
 # дефайн нужен для поддержки wchar
 COMPILER = g++ --std=c++11 -Wall -D_XOPEN_SOURCE_EXTENDED `pkg-config --cflags ncursesw`
 DEBUG = -m32 -g -fno-inline -fno-omit-frame-pointer -O0
-FLAGS = `pkg-config --libs ncursesw` `pkg-config --libs sqlite3` -lpthread
+FLAGS = `pkg-config --libs ncursesw sqlite3` -lpthread -lcurl
 
 # При изменении любого .h всё нужно перекомпилить (т.к. инклюды)
 HEADERS = src/*.h src/classes/*.h
