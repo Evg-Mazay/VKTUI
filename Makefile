@@ -25,6 +25,13 @@ testfront: vktui_frontend_test.exe
 vktui_frontend_test.exe: Frontend.o ScrollableWindow.o frontend_test.o
 	$(COMPILER) -o vktui_frontend_test.exe $^ $(FLAGS)
 
+testnet: vktui_network_test.exe
+	./vktui_network_test.exe
+
+vktui_network_test.exe: Network.o Database.o network_test.o
+	$(COMPILER) -o vktui_network_test.exe $^ $(FLAGS)
+
+
 
 # основные классы
 main.o: src/main.cpp $(HEADERS)
@@ -49,7 +56,8 @@ ScrollableWindow.o: src/classes/ScrollableWindow.cpp $(HEADERS)
 # тесты
 frontend_test.o: src/tests/frontend_test.cpp $(HEADERS)
 	$(COMPILER) -c $<
-
+network_test.o: src/tests/network_test.cpp $(HEADERS)
+	$(COMPILER) -c $<
 
 clean:
 	rm -rfv *.o *.exe *.log *.dSYM
