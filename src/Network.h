@@ -39,8 +39,6 @@ public:
     int get_dialogs(std::vector<dialog>* dialogs);
 
     int send_message(Message_data msg);
-
-    Network();
     
 };
 

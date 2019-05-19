@@ -31,6 +31,23 @@ int online_test()
     return network->test_online();
 }
 
+int message_send_test()
+{
+	Message_data msg {
+		0,
+		time(NULL),
+		23877122,
+		L"ТЕСТ месседж"
+	};
+	
+	int id = network->send_message(msg);
+	
+	msg.id = id;
+	//backend->queue_push(Event(RECIEVED_MESSAGE, msg));
+	
+	return id;
+}
+
 
 //-------------------------------------------
 
@@ -59,7 +76,8 @@ int main()
 
     // auto start = clock();
 
-    err = online_test();
+    err = message_send_test();
+	//err = online_test();
     
     // auto end = clock();
 
