@@ -36,10 +36,7 @@ void Backend::debug_print(std::wstring text, int mode)
 void init(Network* network, Frontend* frontend, User_input* user_input,\
                         Longpoll* longpoll, Backend* backend, Database* database)
 {
-    std::vector<dialog> v;
-    v.push_back((dialog){0, L"lol"});
-
-    database->init_database("cache.db", v);
+	database->init_database("cache.db");
     longpoll->set_credentials(database->get_credentials());
 }
 

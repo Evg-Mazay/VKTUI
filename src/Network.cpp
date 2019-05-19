@@ -17,11 +17,53 @@ int Network::main_loop()
 
 int Network::get_dialogs(std::vector<dialog>* dialogs)
 {
-    dialogs->push_back((dialog){1, std::wstring(L"Антон")});
-    dialogs->push_back((dialog){2, std::wstring(L"Не Антон")});
-    dialogs->push_back((dialog){3, std::wstring(L"Тоже не Антон")});
-    dialogs->push_back((dialog){4, std::wstring(L"Совсем не Антон")});
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	
+	int err = curl.get(VK_ADDR("messages.getConversations", "extended=1", user.token));
 
+    if (err)
+    {
+        last_error.clear();
+        last_error = L"CURL error: " + std::to_wstring(err);
+        return 0;
+    }
+
+    rapidjson::Document d;
+    d.Parse(curl.response()->c_str());
+
+    if (d.HasMember("error"))
+    {
+        last_error.clear();
+        last_error = L"VK error: " + std::to_wstring(err);
+        return 0;
+    }
+	
+	//printf("%s\n", curl.response()->c_str());
+	
+	auto& items = d["response"]["items"];
+	auto& profiles = d["response"]["profiles"];
+	for (unsigned i = 0; i < items.Size(); i++)
+	{
+		
+		int id = items[i]["conversation"]["peer"]["id"].GetInt();
+		if (id > 2000000000)
+			continue;
+		
+		for (unsigned j = 0; j < profiles.Size(); ++j)
+		{
+			if (profiles[j]["id"] == id)
+			{
+				dialogs->push_back((dialog)
+									{id,
+									converter.from_bytes(profiles[j]["first_name"].GetString()) +\
+									L" " +\
+									converter.from_bytes(profiles[j]["last_name"].GetString())\
+									});
+				break;
+			}
+		}
+	}
+	
     return 0;
 }
 
@@ -44,7 +86,7 @@ int Network::send_message(Message_data msg)
 					&curl, converter.to_bytes(msg.text).c_str(), 0));
 
 								
-	printf("%s\n", params.c_str());
+	//printf("%s\n", params.c_str());
 	
 	int err = curl.get(VK_ADDR("messages.send", params.c_str(), user.token));
 								
@@ -55,7 +97,7 @@ int Network::send_message(Message_data msg)
         return 0;
 	}
 	
-	printf("%s\n", curl.response()->c_str());
+	//printf("%s\n", curl.response()->c_str());
 								
 	rapidjson::Document d;
     d.Parse(curl.response()->c_str());

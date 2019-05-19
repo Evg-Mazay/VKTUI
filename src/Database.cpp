@@ -37,15 +37,9 @@ int Database::run_write(const char* command, void* arg, int (*callback)
     return error;
 }
 
-
-int Database::init_database(const char* filename, std::vector<dialog> dialogs)
+int Database::init_dialogs(std::vector<dialog> dialogs)
 {
-    open_write(filename);
-    run_write("CREATE TABLE debug_messages (\
-                    ID INTEGER PRIMARY KEY AUTOINCREMENT,\
-                    message TEXT);", NULL, NULL);
-
-    for (unsigned i = 0; i < dialogs.size(); ++i)
+	for (unsigned i = 0; i < dialogs.size(); ++i)
     {
         auto str = string("CREATE TABLE messages" + to_string(dialogs[i].id) + " (\
                     'id' INTEGER,\
@@ -54,7 +48,17 @@ int Database::init_database(const char* filename, std::vector<dialog> dialogs)
                     'text' TEXT);");
         run_write(str.c_str(), NULL, NULL);
     }
+	
+	return 0;
+}
 
+
+int Database::init_database(const char* filename)
+{
+    open_write(filename);
+    run_write("CREATE TABLE debug_messages (\
+                    ID INTEGER PRIMARY KEY AUTOINCREMENT,\
+                    message TEXT);", NULL, NULL);
 
     run_write("CREATE TABLE credentials (\
                     USER_ID INTEGER,\

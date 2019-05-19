@@ -31,6 +31,18 @@ int online_test()
     return network->test_online();
 }
 
+int dialogs_test()
+{
+	std::vector<dialog> dialogs;
+	
+	network->get_dialogs(&dialogs);
+	
+	for (unsigned i = 0; i < dialogs.size(); ++i)
+		printf("%d %ls\n", dialogs[i].id, dialogs[i].name.c_str());
+	
+	return 0;
+}
+
 int message_send_test()
 {
 	Message_data msg {
@@ -54,10 +66,7 @@ int message_send_test()
 void init(Network* network, Frontend* frontend, User_input* user_input,\
                         Longpoll* longpoll, Backend* backend, Database* database)
 {
-    std::vector<dialog> v;
-    v.push_back((dialog){0, L"lol"});
-
-    database->init_database("cache.db", v);
+	database->init_database("cache.db");
     network->set_credentials(database->get_credentials());
 }
 
@@ -76,13 +85,15 @@ int main()
 
     // auto start = clock();
 
-    err = message_send_test();
+	err = dialogs_test();
+    //err = message_send_test();
 	//err = online_test();
     
     // auto end = clock();
 
     printf("LAST_ERR: %ls\n", network->get_error_message()->c_str());
     printf("RC: %d\n", err);
+	
 
     // printf("_____\n|Time passed: %lu (%f seconds)|\n_____\n", 
     //                     end - start, (double) (end - start) / (double) CLOCKS_PER_SEC);

@@ -46,12 +46,15 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
     backend->network = network;
     backend->frontend = frontend;
     backend->database = database;
-    backend->get_start_data();
 
-    database->init_database("cache.db", backend->dialogs);
+    database->init_database("cache.db");
 
     network->backend = backend;
     network->set_credentials(database->get_credentials());
+	
+	backend->get_start_data();
+	database->init_dialogs(backend->dialogs);
+	
 
     backend->queue_push(Event(RESTORE_MESSAGES, -1));
     backend->process_queue();

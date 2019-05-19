@@ -33,7 +33,8 @@ class Database
     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter; // database need utf8 string
 
     // open connections and create all_tables
-    int init_database(const char* filename, std::vector<dialog> dialogs);
+    int init_database(const char* filename);
+	int init_dialogs(std::vector<dialog> dialogs);
 
     // wrappers for sqlite3 open functions
     int open_write(const char* filename);
