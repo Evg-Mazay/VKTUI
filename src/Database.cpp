@@ -1,4 +1,4 @@
-
+#include <cstring>
 
 #include "Database.h"
 #include "Data_types.h"
@@ -45,7 +45,7 @@ int Database::init_database(const char* filename, std::vector<dialog> dialogs)
                     ID INTEGER PRIMARY KEY AUTOINCREMENT,\
                     message TEXT);", NULL, NULL);
 
-    for (int i = 0; i < dialogs.size(); ++i)
+    for (unsigned i = 0; i < dialogs.size(); ++i)
     {
         auto str = string("CREATE TABLE messages" + to_string(dialogs[i].id) + " (\
                     'id' INTEGER,\

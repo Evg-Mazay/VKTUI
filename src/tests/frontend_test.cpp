@@ -87,7 +87,7 @@ void dialog_test()
 //-------------------------------------------
 
 void init(Network* network, Frontend* frontend, User_input* user_input,\
-                        Backend* backend, Database* database)
+                        Longpoll* longpoll, Backend* backend, Database* database)
 {
     frontend->init_curses();
 }
@@ -97,7 +97,7 @@ int main()
     setlocale(LC_ALL, "");
 
     frontend = new Frontend;
-    init(NULL, frontend, NULL, NULL, NULL);
+    init(NULL, frontend, NULL, NULL, NULL, NULL);
 
     // auto start = clock();
 

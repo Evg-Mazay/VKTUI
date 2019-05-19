@@ -6,6 +6,7 @@
 
 
 #include "Data_types.h"
+#include "Longpoll.h"
 #include "classes/ScrollableWindow.h"
 
 using namespace std;
@@ -37,7 +38,7 @@ class Frontend
     void exit_curses(); // delete all windows and end curses
 
     friend void init(Network* network, Frontend* frontend, User_input* user_input,\
-                        Backend* backend, Database* database);
+                        Longpoll* longpoll, Backend* backend, Database* database);
 
 public:
 
@@ -46,7 +47,7 @@ public:
     void clear_input();                     // replace text in input window with nothing
 
     // replace text in dialogs window
-    void print_dialogs(std::vector<dialog> dialogs, int selected);
+    void print_dialogs(std::vector<dialog> dialogs, unsigned selected);
     
     ~Frontend();
 

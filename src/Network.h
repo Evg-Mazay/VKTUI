@@ -6,34 +6,32 @@
 
 #include "Data_types.h"
 #include "Backend.h"
+#include "classes/Curl_wrapper.h"
 
 class Frontend;
 class Backend;
 class Database;
 class User_input;
+class Longpoll;
 
 class Network
 {
     Backend* backend;
+    Curl_wrapper curl;
+
+    std::wstring last_error;
 
     credentials user = {0};
 
-    CURL *curl;
-    std::string buffer;
-
-    static size_t write_data(void *ptr, size_t size, size_t nmemb, std::string* buffer);
-
-    inline std::string vk_addr(std::string method, std::string params);
-
     friend void init(Network* network, Frontend* frontend, User_input* user_input,\
-                        Backend* backend, Database* database);
+                        Longpoll* longpoll, Backend* backend, Database* database);
 
 public:
 
     int set_credentials(credentials _user);
     void set_addr(std::string addr);
 
-    std::string* get_buffer();
+    std::wstring* get_error_message();
 
     int test_online();
 

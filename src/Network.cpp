@@ -3,6 +3,7 @@
 #include <string>
 #include <ctime>
 #include <curl/curl.h>
+#include <rapidjson/document.h>
 
 #include "Network.h"
 #include "Data_types.h"
@@ -13,25 +14,9 @@ int Network::main_loop()
 }
 
 
-size_t Network::write_data(void *ptr, size_t size, size_t nmemb, std::string* buffer)
-{
-    size_t real_size = size * nmemb;
-    buffer->append((char*)ptr, real_size);
-    return real_size;
-}
-
-void Network::set_addr(std::string addr)
-{
-    curl_easy_setopt(curl, CURLOPT_URL, addr.c_str());
-}
-
 Network::Network()
 {
-    curl = curl_easy_init();
-
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
-    curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
+    
 }
 
 int Network::get_dialogs(std::vector<dialog>* dialogs)
@@ -44,11 +29,6 @@ int Network::get_dialogs(std::vector<dialog>* dialogs)
     return 0;
 }
 
-std::string* Network::get_buffer()
-{
-    return &buffer;
-}
-
 int Network::set_credentials(credentials _user)
 {
     if (_user.id == 0)
@@ -56,12 +36,6 @@ int Network::set_credentials(credentials _user)
 
     user = _user;
     return 0;
-}
-
-inline std::string Network::vk_addr(std::string method, std::string params)
-{
-    return "https://api.vk.com/method/" + method +\
-                      "?" + params + "&v=5.52&access_token=" + user.token;
 }
 
 int Network::send_message(Message_data msg)
@@ -72,8 +46,31 @@ int Network::send_message(Message_data msg)
 
 int Network::test_online()
 {
-    set_addr(vk_addr("account.setOnline", ""));
-    return curl_easy_perform(curl);
+    int err = curl.get(VK_ADDR("account.setOnline", "", user.token));
+
+    if (err)
+    {
+        last_error.clear();
+        last_error = L"CURL error: " + std::to_wstring(err);
+        return 0;
+    }
+
+    rapidjson::Document d;
+    d.Parse(curl.response()->c_str());
+
+    if (d.HasMember("error"))
+    {
+        last_error.clear();
+        last_error = L"VK error: " + std::to_wstring(err);
+        return 0;
+    }
+
+    return 1;
+}
+
+std::wstring* Network::get_error_message()
+{
+    return &last_error;
 }
 
 

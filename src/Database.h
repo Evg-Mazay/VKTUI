@@ -5,6 +5,7 @@
 #include <codecvt>
 #include <iostream>
 #include <vector>
+#include <locale>
 
 #include "Data_types.h"
 
@@ -12,6 +13,7 @@ class Network;
 class Frontend;
 class Backend;
 class User_input;
+class Longpoll;
 
 /*
 This class handles connection to database
@@ -38,7 +40,7 @@ class Database
     int open_read(const char* filename);
 
     friend void init(Network* network, Frontend* frontend, User_input* user_input,\
-                        Backend* backend, Database* database);
+                        Longpoll* longpoll, Backend* backend, Database* database);
 
 public:
 

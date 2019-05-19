@@ -6,6 +6,7 @@
 #include "Frontend.h"
 #include "Backend.h"
 #include "Data_types.h"
+#include "Longpoll.h"
 
 using namespace std;
 
@@ -37,7 +38,7 @@ class User_input
     wstring text;
 
     friend void init(Network* network, Frontend* frontend, User_input* user_input,\
-                        Backend* backend, Database* database);
+                        Longpoll* longpoll, Backend* backend, Database* database);
 
 public:
 

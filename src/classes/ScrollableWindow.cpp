@@ -54,7 +54,7 @@ long ScrollableWindow::print(std::wstring str)
     int old_y;
     getyx(pad, old_y, x);
 
-    for (int i = 0; i < str.length(); ++i)
+    for (unsigned i = 0; i < str.length(); ++i)
     {
         cchar_t c = {A_NORMAL, {str[i]}};
 
@@ -111,6 +111,8 @@ int ScrollableWindow::edit(std::wstring str, long _depth)
 
     int y, x;
     getyx(pad, y, x);
+	y = y+1;
+	y = y-1;
     // frontend->print_debug_message(L"moved: " + to_wstring(y) + L" " + to_wstring(x));
 
     waddwstr(pad, str.c_str());

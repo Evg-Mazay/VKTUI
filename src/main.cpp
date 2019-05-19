@@ -10,13 +10,14 @@
 #include "Backend.h"
 #include "Database.h"
 #include "Data_types.h"
+#include "Longpoll.h"
 
 using namespace std;
 
 // longpoll thread
-void network_thread_main(Network* network)
+void longpoll_thread_main(Longpoll* longpoll)
 {
-    while (network->main_loop());
+    while (longpoll->main_loop());
 }
 
 // keyboard-blockable thread
@@ -33,10 +34,10 @@ void backend_thread_main(Backend* backend)
 
 // prepares program for ready-to run state
 void init(Network* network, Frontend* frontend, User_input* user_input,\
-                        Backend* backend, Database* database)
+                        Longpoll* longpoll, Backend* backend, Database* database)
 {
     setlocale(LC_ALL, "");
-
+	
     frontend->backend = backend;
     frontend->init_curses();
 
@@ -55,6 +56,8 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
     backend->queue_push(Event(RESTORE_MESSAGES, -1));
     backend->process_queue();
 
+    //longpoll->set_credentials(database->get_credentials());
+
 }
 
 // initialization and threading
@@ -65,15 +68,16 @@ int main(void)
     Backend backend;
     Database database;
     User_input user_input;
+    Longpoll longpoll;
 
-    init(&network, &frontend, &user_input, &backend, &database);
+    init(&network, &frontend, &user_input, &longpoll, &backend, &database);
 
     thread input_thread(input_thread_main, &user_input);
     thread backend_thread(backend_thread_main, &backend);
-    thread network_thread(network_thread_main, &network);
+    //thread longpoll_thread(longpoll_thread_main, &longpoll);
 
     input_thread.join();
-    network_thread.join();
+    //longpoll_thread.join();
     backend_thread.join();
 
     return 0;

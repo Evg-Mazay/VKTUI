@@ -3,6 +3,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <string>
+#include <unistd.h>
 
 #include "User_input.h"
 #include "Frontend.h"
@@ -17,8 +18,8 @@ void Frontend::init_curses()
     initscr();
     noecho();
     cbreak();
-    keypad(win_input, 1);
-
+    //keypad(win_input, 1);
+	
     // start_color();
     // init_pair(1, COLOR_YELLOW, COLOR_GREEN);
 
@@ -152,12 +153,12 @@ void Frontend::edit_message(int depth, wstring new_text)
     win_messages->edit(new_text, depth);
 }
 
-void Frontend::print_dialogs(std::vector<dialog> dialogs, int selected)
+void Frontend::print_dialogs(std::vector<dialog> dialogs, unsigned selected)
 {
     werase(win_dialogs);
     wmove(win_dialogs,0,0);
 
-    for (int i = 0; i < dialogs.size() && i < 20; ++i)
+    for (unsigned i = 0; i < dialogs.size() && i < 20; ++i)
     {
         if (i == selected)
             wattrset(win_dialogs, A_REVERSE);

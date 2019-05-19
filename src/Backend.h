@@ -12,6 +12,7 @@ class Network;
 class Frontend;
 class Database;
 class User_input;
+class Longpoll;
 
 /*
 This class is responsible for parsing Events from User_input / Network,
@@ -20,16 +21,15 @@ sending data to Database and Frontend
 main_loop() works in backend thread and sleeps until new event is pushed to queue 
 
 
-
                  Events like                Events like
-┌──────────┐    "Key pressed"             "Message added"   ┌───────┐
-│User_input│─────────────────────┐   ┌──────────────────────│Network│
-└──────────┘                     ▼   ▼                      └───────┘
-                                ┌─────┐                         ▲
-                                │queue│                         │
- ┌────────┐   "draw something" ╔┴═════┴╗     "send message"     │
- │Frontend│◀───────────────────║Backend║────────────────────────┘
- └────────┘                    ╚═══════╝
+┌──────────┐    "Key pressed"             "Message added"   ┌────────┐
+│User_input│─────────────────────┐   ┌──────────────────────│Longpoll│
+└──────────┘                     ▼   ▼                      └────────┘
+                                ┌─────┐                         
+                                │queue│                         
+ ┌────────┐   "draw something" ╔┴═════┴╗     "send message" ┌───────┐  
+ │Frontend│◀───────────────────║Backend║───────────────────▶│Network│
+ └────────┘                    ╚═══════╝                    └───────┘
                                    │
                                    │ "read data"
                                    │ "write data"
@@ -61,7 +61,7 @@ class Backend
     int get_start_data();
 
     friend void init(Network* network, Frontend* frontend, User_input* user_input,\
-                        Backend* backend, Database* database);
+                        Longpoll* longpoll, Backend* backend, Database* database);
 
 public:
     // sleeps until condition variable. If returns 0, thread dies.
