@@ -123,7 +123,7 @@ void Frontend::add_message(Message_data message)
     win_messages->print(L"✓ ");
 
     win_messages->attr(WA_UNDERLINE);
-    win_messages->print(to_wstring(message.person).c_str());
+    win_messages->print(L"message");
     win_messages->attr(0);
 
     win_messages->print(L": ");

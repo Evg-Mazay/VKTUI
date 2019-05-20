@@ -50,6 +50,8 @@ class Backend
     std::mutex backend_main_mutex;              // mutex for condition variable
     std::condition_variable new_event_queued;   // holding main_loop
 
+    std::mutex debug_print_mutex;
+
     Event_queue queue;  // incoming events go here
 
     std::vector<dialog> dialogs; // dialog list

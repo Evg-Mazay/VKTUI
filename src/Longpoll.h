@@ -27,6 +27,9 @@ class Longpoll
 
 	void parse_updates();
 
+    friend void init(Network* network, Frontend* frontend, User_input* user_input,\
+                        Longpoll* longpoll, Backend* backend, Database* database);
+
 public:
     
     int main_loop();

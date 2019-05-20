@@ -59,7 +59,8 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
     backend->queue_push(Event(RESTORE_MESSAGES, -1));
     backend->process_queue();
 
-    //longpoll->set_credentials(database->get_credentials());
+    longpoll->backend = backend;
+    longpoll->set_credentials(database->get_credentials());
 
 }
 
@@ -77,10 +78,10 @@ int main(void)
 
     thread input_thread(input_thread_main, &user_input);
     thread backend_thread(backend_thread_main, &backend);
-    //thread longpoll_thread(longpoll_thread_main, &longpoll);
+    thread longpoll_thread(longpoll_thread_main, &longpoll);
 
     input_thread.join();
-    //longpoll_thread.join();
+    longpoll_thread.join();
     backend_thread.join();
 
     return 0;

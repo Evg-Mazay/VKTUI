@@ -39,6 +39,8 @@ int Backend::get_start_data()
 
 void Backend::debug_print(std::wstring text, int mode)
 {
+    std::lock_guard<std::mutex> lock(debug_print_mutex);
+
     if (mode & DEBUG_PRINT_DISPLAY)
         frontend->print_debug_message(text);
 
@@ -75,17 +77,29 @@ int Backend::process_queue()
 
             delete event.data.text_p;
 
-            int error = database->add_message(dialogs[selected_dialog].id, msg);
-
-            frontend->print_debug_message(database->last_error());
-            if (!error)
-                frontend->add_message(msg);
+            int id = network->send_message(msg);
+            
+            if (id == 0)
+            {
+                debug_print(network->get_error_message()->c_str(), DEBUG_PRINT_DISPLAY);
+                continue;
+            }
+            else
+            {
+                msg.id = id;
+                database->add_message(dialogs[selected_dialog].id, msg);
+            }
         }
         else if (event.type == RECIEVED_MESSAGE)
         {
-            database->add_message(dialogs[selected_dialog].id, *event.data.message_p);
-            frontend->add_message(*event.data.message_p);
+            Message_data msg = *event.data.message_p;
             delete event.data.message_p;
+
+            database->add_message(msg.person, msg);
+
+            if (msg.person == dialogs[selected_dialog].id)
+                frontend->add_message(msg);
+
         }
         else if (event.type == EDIT_INPUT_MESSAGE)
         {
