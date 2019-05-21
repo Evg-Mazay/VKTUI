@@ -33,7 +33,7 @@ public:
 
     std::wstring* get_error_message();
 
-    int test_online();
+    bool test_online();
 
     int main_loop();
     int get_dialogs(std::vector<dialog>* dialogs);

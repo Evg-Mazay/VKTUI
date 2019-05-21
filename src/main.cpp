@@ -48,18 +48,20 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
     database->init_database("cache.db");
 
     credentials creds = database->get_credentials();
-    if (creds.id == 0)
+
+    network->backend = backend;
+    network->set_credentials(creds);
+
+    if (!network->test_online())
     {
         Auth_interface auth;
         creds = auth.get();
         database->add_credentials(creds);
+        network->set_credentials(creds);
     }
 
     frontend->backend = backend;
     frontend->init_curses();
-
-    network->backend = backend;
-    network->set_credentials(creds);
 	
 	backend->get_start_data();
 	database->init_dialogs(backend->dialogs);

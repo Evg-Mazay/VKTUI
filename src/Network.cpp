@@ -9,6 +9,7 @@
 
 #include "Network.h"
 #include "Data_types.h"
+#include "classes/Curl_wrapper.h"
 
 int Network::main_loop()
 {
@@ -115,7 +116,7 @@ int Network::send_message(Message_data msg)
     return id;
 }
 
-int Network::test_online()
+bool Network::test_online()
 {
     int err = curl.get(VK_ADDR("account.setOnline", "", user.token));
 
@@ -123,7 +124,7 @@ int Network::test_online()
     {
         last_error.clear();
         last_error = L"CURL error: " + std::to_wstring(err);
-        return 0;
+        return false;
     }
 
     rapidjson::Document d;
@@ -133,10 +134,10 @@ int Network::test_online()
     {
         last_error.clear();
         last_error = L"VK error: " + std::to_wstring(err);
-        return 0;
+        return false;
     }
 
-    return 1;
+    return true;
 }
 
 std::wstring* Network::get_error_message()
