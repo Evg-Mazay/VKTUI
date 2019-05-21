@@ -69,6 +69,9 @@ public:
     // return user_id and token
     credentials get_credentials();
 
+    // set user_id and token
+    int add_credentials(credentials creds);
+
     // convert wstring to utf8
     std::string to_utf8(std::wstring text);
 

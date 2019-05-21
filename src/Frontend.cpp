@@ -53,7 +53,7 @@ void Frontend::init_curses()
     scrollok(win_debug, 1);
 
     attrset(WA_UNDERLINE);
-    mvaddnstr(0,0,"VKTUI v0.0 \t PRESS ESC THREE TIMES TO EXIT", COLS);
+    mvaddnstr(0,0,"VKTUI v0.0 \t PRESS Ctrl+C TO EXIT", COLS);
     attrset(0);
     refresh();
 

@@ -11,6 +11,7 @@
 #include "Database.h"
 #include "Data_types.h"
 #include "Longpoll.h"
+#include "classes/Auth_interface.h"
 
 using namespace std;
 
@@ -37,9 +38,6 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
                         Longpoll* longpoll, Backend* backend, Database* database)
 {
     setlocale(LC_ALL, "");
-	
-    frontend->backend = backend;
-    frontend->init_curses();
 
     user_input->backend = backend;
 
@@ -49,18 +47,28 @@ void init(Network* network, Frontend* frontend, User_input* user_input,\
 
     database->init_database("cache.db");
 
+    credentials creds = database->get_credentials();
+    if (creds.id == 0)
+    {
+        Auth_interface auth;
+        creds = auth.get();
+        database->add_credentials(creds);
+    }
+
+    frontend->backend = backend;
+    frontend->init_curses();
+
     network->backend = backend;
-    network->set_credentials(database->get_credentials());
+    network->set_credentials(creds);
 	
 	backend->get_start_data();
 	database->init_dialogs(backend->dialogs);
-	
 
     backend->queue_push(Event(RESTORE_MESSAGES, -1));
     backend->process_queue();
 
     longpoll->backend = backend;
-    longpoll->set_credentials(database->get_credentials());
+    longpoll->set_credentials(creds);
 
 }
 

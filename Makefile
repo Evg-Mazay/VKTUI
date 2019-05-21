@@ -10,7 +10,7 @@ launch: vktui.exe
 	./vktui.exe
 
 vktui.exe: main.o Backend.o Database.o Frontend.o User_input.o Network.o \
-			Curl_wrapper.o Longpoll.o Event_queue.o ScrollableWindow.o
+			Auth_interface.o Curl_wrapper.o Longpoll.o Event_queue.o ScrollableWindow.o
 	$(COMPILER) -o vktui.exe $^ $(FLAGS)
 
 
@@ -61,6 +61,8 @@ Event_queue.o: src/classes/Event_queue.cpp $(HEADERS)
 ScrollableWindow.o: src/classes/ScrollableWindow.cpp $(HEADERS)
 	$(COMPILER) -c $<
 Curl_wrapper.o: src/classes/Curl_wrapper.cpp $(HEADERS)
+	$(COMPILER) -c $<
+Auth_interface.o: src/classes/Auth_interface.cpp $(HEADERS)
 	$(COMPILER) -c $<
 
 # тесты

@@ -143,6 +143,15 @@ credentials Database::get_credentials()
     return result;
 }
 
+int Database::add_credentials(credentials creds)
+{
+    std::string query = std::string("INSERT INTO credentials VALUES(" +\
+                            to_string(creds.id) + ",'" + creds.token + "');");
+    run_write(query.c_str(), NULL, NULL);
+
+    return 0;
+}
+
 
 string Database::to_utf8(wstring text)
 {
