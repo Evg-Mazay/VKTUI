@@ -63,6 +63,11 @@ int Backend::process_queue()
     {
         Event event = queue.pop();
 
+        if (event.type == EDIT_INPUT_MESSAGE)
+            frontend->set_cursor(1);
+        else
+            curs_set(0);
+
         if (event.type == EXIT)
         {
             return 0;
@@ -107,6 +112,8 @@ int Backend::process_queue()
 
                 // Здесь логика добавления нового юзера
 
+
+            frontend->do_beep();
         }
         else if (event.type == EDIT_INPUT_MESSAGE)
         {

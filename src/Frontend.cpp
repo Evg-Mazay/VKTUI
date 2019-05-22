@@ -51,8 +51,6 @@ void Frontend::init_curses()
 
 
     //keypad(win_input, 1);
-    leaveok(win_dialogs, TRUE);
-    leaveok(win_debug, TRUE);
     scrollok(win_debug, TRUE);
 
     attrset(WA_UNDERLINE);
@@ -107,7 +105,7 @@ void Frontend::exit_curses()
 
 void Frontend::print_debug_message(wstring text)
 {
-    text += L"\n";
+    waddwstr(win_debug, L"\n");
     waddwstr(win_debug, text.c_str());
     wrefresh(win_debug);
 }
@@ -194,9 +192,15 @@ void Frontend::reset_messages()
 }
 
 
+void Frontend::set_cursor(int state)
+{
+    curs_set(state);
+}
 
-
-
+void Frontend::do_beep()
+{
+    beep();
+}
 
 
 

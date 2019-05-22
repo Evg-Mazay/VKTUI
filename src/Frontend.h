@@ -58,6 +58,12 @@ public:
     // scroll messages n lines up (n < 0) or down (n > 0)
     void scroll_messages(int n);
 
+    // set cursor visible / invisible
+    void set_cursor(int state);
+
+    // short sound
+    void do_beep();
+
     // !! пока работает не так, как задумано
     void edit_message(int id, std::wstring new_text); // edit specified message
     
