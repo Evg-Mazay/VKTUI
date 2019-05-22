@@ -166,13 +166,22 @@ void Frontend::print_dialogs(std::vector<dialog> dialogs, unsigned selected)
     for (unsigned i = 0; i < dialogs.size() && i < 20; ++i)
     {
         if (i == selected)
-            wattrset(win_dialogs, A_REVERSE);
+            wattron(win_dialogs, A_REVERSE);
+
+        if (dialogs[i].online)
+            waddwstr(win_dialogs, L"● ");
+        else
+            waddwstr(win_dialogs, L"○ ");
 
         waddwstr(win_dialogs, (dialogs[i].first_name + L" "+dialogs[i].last_name).c_str());
+
+        wattron(win_dialogs, A_BLINK | A_BOLD);
+        waddwstr(win_dialogs, dialogs[i].icon.c_str());
+        wattroff(win_dialogs, A_BLINK | A_BOLD);
+
         waddwstr(win_dialogs, L"\n");
 
-        if (i == selected)
-            wattrset(win_dialogs, 0);
+        wattrset(win_dialogs, 0);
     }
 
     wrefresh(win_dialogs);

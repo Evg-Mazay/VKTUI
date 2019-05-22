@@ -18,12 +18,16 @@ Longpoll* longpoll;
 
 void Backend::queue_push(Event event)
 {
-    printf("%d %ld %d %ls\n",
-        event.data.message_p->id,
-        event.data.message_p->time,
-        event.data.message_p->person,
-        event.data.message_p->text.c_str()
-    );
+    if (event.type == LP_NEW_MESSAGE)
+        printf("%d %d %ld %d %ls\n",
+            event.data.message_p->id,
+            event.data.message_p->flags,
+            event.data.message_p->time,
+            event.data.message_p->person,
+            event.data.message_p->text.c_str()
+        );
+    else
+        printf("Queued_event: %d\n", event.type);
 }
 
 void Backend::debug_print(std::wstring text, int mode)

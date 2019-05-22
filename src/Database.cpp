@@ -111,7 +111,7 @@ int Database::add_message(int dialog_id, int id, int flags, long int date,
 
 vector<Message_data> Database::restore_last_n_messages(int dialog_id, int n)
 {
-    string str("SELECT [id], [date], [flags], [person], [text] FROM \
+    string str("SELECT [id], [flags], [date], [person], [text] FROM \
         messages" + to_string(dialog_id) + " ORDER BY date LIMIT " + to_string(n) + ";");
 
     vector<Message_data> vec;

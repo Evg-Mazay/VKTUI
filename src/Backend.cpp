@@ -13,6 +13,7 @@
 #include "Backend.h"
 #include "Network.h"
 #include "Data_types.h"
+#include "Longpoll.h"
 #include "classes/Event_queue.h"
 
 int Backend::main_loop()
@@ -95,6 +96,16 @@ int Backend::process_queue()
 
             if (msg.person == dialogs[selected_dialog].id)
                 frontend->add_message(msg, dialogs[selected_dialog]);
+            else
+                for (int i = 0; i < dialogs.size(); ++i)
+                    if (dialogs[i].id == msg.person)
+                    {
+                        dialogs[i].icon = L" ✉";
+                        frontend->print_dialogs(dialogs, selected_dialog);
+                        break;
+                    }
+
+                // Здесь логика добавления нового юзера
 
         }
         else if (event.type == EDIT_INPUT_MESSAGE)
@@ -112,6 +123,7 @@ int Backend::process_queue()
             if (event.data.integer == ARROW_LEFT)
             {
                 selected_dialog = (selected_dialog + 1) % dialogs.size();
+                dialogs[selected_dialog].icon = L"";
 
                 frontend->reset_messages();
 
@@ -124,6 +136,7 @@ int Backend::process_queue()
             else if (event.data.integer == ARROW_RIGHT)
             {
                 selected_dialog = (selected_dialog + dialogs.size() - 1) % dialogs.size();
+                dialogs[selected_dialog].icon = L"";
 
                 frontend->reset_messages();
                 
@@ -141,6 +154,16 @@ int Backend::process_queue()
             {
                 frontend->scroll_messages(2);
             }
+        }
+        else if (event.type == LP_USER_ONLINE || event.type == LP_USER_OFFLINE)
+        {
+            for (int i = 0; i < dialogs.size(); ++i)
+                if (dialogs[i].id == event.data.integer)
+                {
+                    dialogs[i].online = (event.type == LP_USER_OFFLINE ? 0 : 1);
+                    frontend->print_dialogs(dialogs, selected_dialog);
+                    break;
+                }
         }
     }
 

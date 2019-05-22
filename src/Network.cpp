@@ -57,7 +57,8 @@ int Network::get_dialogs(std::vector<dialog>* dialogs)
                 dialogs->push_back((dialog)
                             {id,
                             converter.from_bytes(profiles[j]["first_name"].GetString()),
-                            converter.from_bytes(profiles[j]["last_name"].GetString())
+                            converter.from_bytes(profiles[j]["last_name"].GetString()),
+                            (bool) profiles[j]["online"].GetInt(),
                             });
                 break;
             }

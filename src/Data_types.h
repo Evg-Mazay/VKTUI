@@ -25,6 +25,8 @@ struct dialog
     int id;
     std::wstring first_name;
     std::wstring last_name;
+    bool online;
+    std::wstring icon;
 };
 
 struct Message_data

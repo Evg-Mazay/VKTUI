@@ -9,6 +9,11 @@
 #include "Backend.h"
 #include "classes/Curl_wrapper.h"
 
+#define LP_NEW_MESSAGE  4
+#define LP_IN_READED    6
+#define LP_OUT_READED   7
+#define LP_USER_ONLINE  8
+#define LP_USER_OFFLINE 9
 
 class Longpoll
 {
