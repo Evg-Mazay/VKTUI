@@ -23,12 +23,14 @@ struct credentials
 struct dialog
 {
     int id;
-    std::wstring name;
+    std::wstring first_name;
+    std::wstring last_name;
 };
 
 struct Message_data
 {
     int id;
+    int flags;
     long time;
     int person; // it means "from who" for incoming msg, and "to who" for outcoming
     std::wstring text;

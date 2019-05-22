@@ -43,6 +43,7 @@ int Database::init_dialogs(std::vector<dialog> dialogs)
     {
         auto str = string("CREATE TABLE messages" + to_string(dialogs[i].id) + " (\
                     'id' INTEGER,\
+                    'flags' INTEGER,\
                     'date' DATE,\
                     'person' INTEGER,\
                     'text' TEXT);");
@@ -51,6 +52,12 @@ int Database::init_dialogs(std::vector<dialog> dialogs)
 	
 	return 0;
 }
+
+// int Database::add_user(int id, std::string first_name, std::string last_name)
+// {
+//     auto str = string("INSERT INTO users VALUES(" + to_string(id) + "," +\
+//                         first_name + "," + last_name + ");");
+// }
 
 
 int Database::init_database(const char* filename)
@@ -69,6 +76,11 @@ int Database::init_database(const char* filename)
                 DELETE FROM credentials WHERE rowid IN\
                                 (SELECT rowid FROM credentials LIMIT 1);\
                 END;", NULL, NULL);
+
+    // run_write("CREATE TABLE users (\
+    //                 id INTEGER,\
+    //                 first_name TEXT,\
+    //                 last_name TEXT);", NULL, NULL);
     
 
     open_read(filename);
@@ -83,12 +95,13 @@ void Database::add_debug_message(wstring message)
     run_write(str.c_str(), NULL, NULL);
 }
 
-int Database::add_message(int dialog_id, int id, long int date, 
+int Database::add_message(int dialog_id, int id, int flags, long int date, 
                                         int person, wstring text)
 {
     // НЕ ПОДДЕРЖИВАЕТ КАВЫЧКИ В ТЕКСТЕ
     string str("INSERT INTO messages" + to_string(dialog_id) + " VALUES (" +
         to_string(id)           + "," +
+        to_string(flags)        + "," +
         to_string(date)         + "," +
         to_string(person)       + "," +
         "'" + to_utf8(text) + "'" + ");");
@@ -98,7 +111,7 @@ int Database::add_message(int dialog_id, int id, long int date,
 
 vector<Message_data> Database::restore_last_n_messages(int dialog_id, int n)
 {
-    string str("SELECT [id], [date], [person], [text] FROM \
+    string str("SELECT [id], [date], [flags], [person], [text] FROM \
         messages" + to_string(dialog_id) + " ORDER BY date LIMIT " + to_string(n) + ";");
 
     vector<Message_data> vec;
@@ -111,7 +124,8 @@ vector<Message_data> Database::restore_last_n_messages(int dialog_id, int n)
             atoi(data[0]),
             atoi(data[1]),
             atoi(data[2]),
-            converter.from_bytes(data[3])
+            atoi(data[3]),
+            converter.from_bytes(data[4])
         };
         
         ((vector<Message_data>*)vec)->push_back(msg);
@@ -169,7 +183,7 @@ wstring Database::last_error()
 
 int Database::add_message(int dialog_id, Message_data msg)
 {
-    return add_message(dialog_id, msg.id, msg.time, msg.person, msg.text);
+    return add_message(dialog_id, msg.id, msg.flags, msg.time, msg.person, msg.text);
 }
 
 

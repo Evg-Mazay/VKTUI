@@ -56,9 +56,11 @@ void Longpoll::parse_updates()
 			
 			Message_data msg;
 			msg.id = a[i][1].GetInt();
+			msg.flags = a[i][2].GetInt();
 			msg.time = a[i][4].GetInt();
 			msg.person = a[i][3].GetInt();
 			msg.text = converter.from_bytes(a[i][5].GetString());
+			// printf("%s\n", curl.response()->c_str());
 			
 			backend->queue_push(Event(RECIEVED_MESSAGE, msg));
 		}

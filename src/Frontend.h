@@ -51,9 +51,9 @@ public:
     
     ~Frontend();
 
-    void add_message(Message_data message);             // print message in messages window
-    void add_messages(vector<Message_data> messages);   // calls add_message in loop
-    void reset_messages();                              // reset messages window
+    void add_message(Message_data message, dialog _dialog); // print message
+    void add_messages(vector<Message_data> messages, dialog _dialog);
+    void reset_messages();                                  // reset messages window
 
     // scroll messages n lines up (n < 0) or down (n > 0)
     void scroll_messages(int n);

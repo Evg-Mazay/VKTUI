@@ -18,7 +18,6 @@ void Frontend::init_curses()
     initscr();
     noecho();
     cbreak();
-    //keypad(win_input, 1);
 	
     // start_color();
     // init_pair(1, COLOR_YELLOW, COLOR_GREEN);
@@ -50,7 +49,11 @@ void Frontend::init_curses()
     win_input = newwin(input_h, input_w, input_y, input_x);
     win_debug = newwin(debug_h, debug_w, debug_y, debug_x);
 
-    scrollok(win_debug, 1);
+
+    //keypad(win_input, 1);
+    leaveok(win_dialogs, TRUE);
+    leaveok(win_debug, TRUE);
+    scrollok(win_debug, TRUE);
 
     attrset(WA_UNDERLINE);
     mvaddnstr(0,0,"VKTUI v0.0 \t PRESS Ctrl+C TO EXIT", COLS);
@@ -117,13 +120,16 @@ void Frontend::show_input_text(wstring text)
 }
 
 
-void Frontend::add_message(Message_data message)
+void Frontend::add_message(Message_data message, dialog _dialog)
 {
-
+    //print_debug_message(to_wstring(_dialog.id) + L" " + to_wstring(message.person));
     win_messages->print(L"✓ ");
 
     win_messages->attr(WA_UNDERLINE);
-    win_messages->print(L"message");
+    if (message.flags & 2)
+        win_messages->print(L"Я");
+    else
+        win_messages->print(_dialog.first_name);
     win_messages->attr(0);
 
     win_messages->print(L": ");
@@ -135,11 +141,10 @@ void Frontend::add_message(Message_data message)
     // refresh_windows(WIN_MESSAGES);
 }
 
-void Frontend::add_messages(std::vector<Message_data> messages)
+void Frontend::add_messages(std::vector<Message_data> messages, dialog _dialog)
 {
     for(auto it = messages.begin(); it != messages.end(); ++it)
-        add_message(*it);
-
+        add_message(*it, _dialog);
 }
 
 void Frontend::scroll_messages(int n)
@@ -163,7 +168,7 @@ void Frontend::print_dialogs(std::vector<dialog> dialogs, unsigned selected)
         if (i == selected)
             wattrset(win_dialogs, A_REVERSE);
 
-        waddwstr(win_dialogs, dialogs[i].name.c_str());
+        waddwstr(win_dialogs, (dialogs[i].first_name + L" "+dialogs[i].last_name).c_str());
         waddwstr(win_dialogs, L"\n");
 
         if (i == selected)

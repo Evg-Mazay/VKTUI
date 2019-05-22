@@ -69,6 +69,7 @@ int Backend::process_queue()
         else if (event.type == SEND_INPUT_MESSAGE)
         {
             Message_data msg = {
+                0,
                 0, 
                 time(NULL), 
                 dialogs[selected_dialog].id,
@@ -84,11 +85,6 @@ int Backend::process_queue()
                 debug_print(network->get_error_message()->c_str(), DEBUG_PRINT_DISPLAY);
                 continue;
             }
-            else
-            {
-                msg.id = id;
-                database->add_message(dialogs[selected_dialog].id, msg);
-            }
         }
         else if (event.type == RECIEVED_MESSAGE)
         {
@@ -98,7 +94,7 @@ int Backend::process_queue()
             database->add_message(msg.person, msg);
 
             if (msg.person == dialogs[selected_dialog].id)
-                frontend->add_message(msg);
+                frontend->add_message(msg, dialogs[selected_dialog]);
 
         }
         else if (event.type == EDIT_INPUT_MESSAGE)
@@ -107,8 +103,9 @@ int Backend::process_queue()
         }
         else if (event.type == RESTORE_MESSAGES)
         {
-            frontend->add_messages(database->restore_last_n_messages(
-                        dialogs[selected_dialog].id, event.data.integer));
+            auto messages = database->restore_last_n_messages(
+                        dialogs[selected_dialog].id, event.data.integer);
+            frontend->add_messages(messages, dialogs[selected_dialog]);
         }
         else if (event.type == KEY_PRESS)
         {
@@ -117,18 +114,22 @@ int Backend::process_queue()
                 selected_dialog = (selected_dialog + 1) % dialogs.size();
 
                 frontend->reset_messages();
-                frontend->add_messages(database->restore_last_n_messages(
-                                                dialogs[selected_dialog].id, -1));
+
+                auto messages = database->restore_last_n_messages(
+                                                dialogs[selected_dialog].id, -1);
+                frontend->add_messages(messages, dialogs[selected_dialog]);
 
                 frontend->print_dialogs(dialogs, selected_dialog);
             }
             else if (event.data.integer == ARROW_RIGHT)
             {
-                selected_dialog = (selected_dialog - 1) % dialogs.size();
+                selected_dialog = (selected_dialog + dialogs.size() - 1) % dialogs.size();
 
                 frontend->reset_messages();
-                frontend->add_messages(database->restore_last_n_messages(
-                                                dialogs[selected_dialog].id, -1));
+                
+                auto messages = database->restore_last_n_messages(
+                                                dialogs[selected_dialog].id, -1);
+                frontend->add_messages(messages, dialogs[selected_dialog]);
 
                 frontend->print_dialogs(dialogs, selected_dialog);
             }

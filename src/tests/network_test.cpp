@@ -38,7 +38,7 @@ int dialogs_test()
 	network->get_dialogs(&dialogs);
 	
 	for (unsigned i = 0; i < dialogs.size(); ++i)
-		printf("%d %ls\n", dialogs[i].id, dialogs[i].name.c_str());
+		printf("%d %ls\n", dialogs[i].id, dialogs[i].first_name.c_str());
 	
 	return 0;
 }
@@ -47,6 +47,7 @@ int message_send_test()
 {
 	Message_data msg {
 		0,
+        0,
 		time(NULL),
 		23877122,
 		L"ТЕСТ месседж"

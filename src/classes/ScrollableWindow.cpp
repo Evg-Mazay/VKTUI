@@ -16,6 +16,7 @@ ScrollableWindow::ScrollableWindow(int _real_lines, int _lines, int _cols, int _
     depth = -lines;
 
     pad = newpad(real_lines, cols);
+    leaveok(pad, TRUE);
 
     wmove(pad, 0, 0);
 }

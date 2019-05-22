@@ -18,9 +18,9 @@ int Network::main_loop()
 
 int Network::get_dialogs(std::vector<dialog>* dialogs)
 {
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-	
-	int err = curl.get(VK_ADDR("messages.getConversations", "extended=1", user.token));
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    
+    int err = curl.get(VK_ADDR("messages.getConversations", "extended=1", user.token));
 
     if (err)
     {
@@ -38,33 +38,32 @@ int Network::get_dialogs(std::vector<dialog>* dialogs)
         last_error = L"VK error: " + std::to_wstring(err);
         return 0;
     }
-	
-	//printf("%s\n", curl.response()->c_str());
-	
-	auto& items = d["response"]["items"];
-	auto& profiles = d["response"]["profiles"];
-	for (unsigned i = 0; i < items.Size(); i++)
-	{
-		
-		int id = items[i]["conversation"]["peer"]["id"].GetInt();
-		if (id > 2000000000)
-			continue;
-		
-		for (unsigned j = 0; j < profiles.Size(); ++j)
-		{
-			if (profiles[j]["id"] == id)
-			{
-				dialogs->push_back((dialog)
-									{id,
-									converter.from_bytes(profiles[j]["first_name"].GetString()) +\
-									L" " +\
-									converter.from_bytes(profiles[j]["last_name"].GetString())\
-									});
-				break;
-			}
-		}
-	}
-	
+    
+    //printf("%s\n", curl.response()->c_str());
+    
+    auto& items = d["response"]["items"];
+    auto& profiles = d["response"]["profiles"];
+    for (unsigned i = 0; i < items.Size(); i++)
+    {
+        
+        int id = items[i]["conversation"]["peer"]["id"].GetInt();
+        if (id > 2000000000)
+            continue;
+        
+        for (unsigned j = 0; j < profiles.Size(); ++j)
+        {
+            if (profiles[j]["id"] == id)
+            {
+                dialogs->push_back((dialog)
+                            {id,
+                            converter.from_bytes(profiles[j]["first_name"].GetString()),
+                            converter.from_bytes(profiles[j]["last_name"].GetString())
+                            });
+                break;
+            }
+        }
+    }
+    
     return 0;
 }
 
@@ -79,40 +78,40 @@ int Network::set_credentials(credentials _user)
 
 int Network::send_message(Message_data msg)
 {
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-	
-	std::string params("user_id=");
-	params += std::to_string(msg.person) + "&random_id=0&message=";
-	params += std::string(curl_easy_escape(
-					&curl, converter.to_bytes(msg.text).c_str(), 0));
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    
+    std::string params("user_id=");
+    params += std::to_string(msg.person) + "&random_id=0&message=";
+    params += std::string(curl_easy_escape(
+                    &curl, converter.to_bytes(msg.text).c_str(), 0));
 
-								
-	//printf("%s\n", params.c_str());
-	
-	int err = curl.get(VK_ADDR("messages.send", params.c_str(), user.token));
-								
-	if (err)
-	{
-		last_error.clear();
+                                
+    //printf("%s\n", params.c_str());
+    
+    int err = curl.get(VK_ADDR("messages.send", params.c_str(), user.token));
+                                
+    if (err)
+    {
+        last_error.clear();
         last_error = L"CURL error: " + std::to_wstring(err);
         return 0;
-	}
-	
-	//printf("%s\n", curl.response()->c_str());
-								
-	rapidjson::Document d;
+    }
+    
+    // printf("%s\n", curl.response()->c_str());
+
+    rapidjson::Document d;
     d.Parse(curl.response()->c_str());
-	
-	
-	if (d.HasMember("error"))
+    
+    
+    if (d.HasMember("error"))
     {
         last_error = L"VK error: " + std::to_wstring(d["error"]["error_code"].GetInt());
         return 0;
     }
-	
-	
-	int id = d["response"].GetInt();
-	
+    
+    
+    int id = d["response"].GetInt();
+    
     return id;
 }
 

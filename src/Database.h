@@ -59,9 +59,12 @@ public:
     void add_debug_message(std::wstring message); // сюда прикольно поставить триггер
 
     // add message into dialog
-    int add_message(int dialog_id, int id, long int date,
+    int add_message(int dialog_id, int id, int flags, long int date,
                                         int person, std::wstring text);
     int add_message(int dialog_id, Message_data msg);
+
+    // adding to users table
+    int add_user(int id, std::string first_name, std::string last_name);
 
     // get last error message
     std::wstring last_error();
